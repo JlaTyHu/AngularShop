@@ -1,0 +1,95 @@
+<div class="main-content">
+  <button (click)="onAddItem()">Click me</button>
+  <div class="d-flex justify-content-center">
+    <div class="grid-container shadow-settings">
+      <div class="item1 border-hr-line position-relative" [ngStyle]="{ width: '350px', padding: '20px' }">
+        <p>
+          <strong>
+            Меню керування
+          </strong>
+        </p>
+        <hr>
+        <button
+          mat-flat-button
+          class="w-100 btn-create"
+          (click)="onCreateItem()"
+        >
+          Додати новий товар
+        </button>
+      </div>
+      <mat-paginator
+        class="item2"
+        [length]="items.length"
+        [pageSize]="9"
+        (page)="onPageChange($event)"
+      >
+      </mat-paginator>
+      <div class="item3 custom-grid justify-content-center">
+        <div
+          [@fadeInOut]
+          class="item-card p-3 grid-item-border"
+          *ngFor="let item of pagedItems; let i = index"
+        >
+          <div>
+            <img
+              src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+              class="mat-img-size"
+            >
+            <div class="pt-3">
+              <h3> {{ item }} </h3>
+              <div class="d-flex justify-content-between">
+                <div>
+                  <ng-container *ngFor="let star of rating">
+                    <ng-container *ngIf="star; else voidStar">
+                      <mat-icon class="font-size-20px star">
+                        star
+                      </mat-icon>
+                    </ng-container>
+                    <ng-template #voidStar>
+                      <mat-icon class="font-size-20px star">
+                        star_border
+                      </mat-icon>
+                    </ng-template>
+                  </ng-container>
+                </div>
+                <div class="d-flex">
+                  <mat-icon
+                    matRipple
+                    [matRippleCentered]="true"
+                    [matRippleUnbounded]="true"
+                    matTooltip="Відгуки"
+                  >
+                    chat
+                  </mat-icon>
+                  (37)
+                </div>
+              </div>
+              <p> Ціна: 100$ </p>
+              <div class="d-flex justify-content-between">
+                <mat-icon
+                  matRipple
+                  [matRippleCentered]="true"
+                  [matRippleUnbounded]="true"
+                  class="icon-size-30px"
+                  matTooltip="Придбати"
+                >
+                  shopping_cart
+                </mat-icon>
+                <mat-icon
+                  matRipple
+                  [matRippleCentered]="true"
+                  [matRippleUnbounded]="true"
+                  class="icon-size-30px"
+                  matTooltip="У кошик"
+                >
+                  add_shopping_cart
+                </mat-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+</div>

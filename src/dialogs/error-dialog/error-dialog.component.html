@@ -1,0 +1,31 @@
+<div class="header-row">
+  <h2 mat-dialog-title>
+    <mat-icon [ngStyle]="{ 'vertical-align': 'middle'}">
+      error_outline
+    </mat-icon>
+    Error Occurred
+  </h2>
+  <button
+    mat-stroked-button
+    mat-dialog-close
+    class="justify-content-end"
+  >
+    <mat-icon>
+      close
+    </mat-icon>
+  </button>
+</div>
+<hr>
+<mat-dialog-content>
+  <p>
+    {{ errorMessage.message }}
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-flat-button color="warn" mat-dialog-close>
+    <mat-icon>
+      close
+    </mat-icon>
+    Close
+  </button>
+</mat-dialog-actions>

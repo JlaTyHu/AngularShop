@@ -1,0 +1,147 @@
+<br>
+<div class="main-content">
+  <div class="d-flex justify-content-center">
+    <div class="grid-container shadow-settings">
+      <div class="item1 border-hr-line position-relative" [ngStyle]="{ width: '350px', padding: '20px' }">
+        <p>
+          <strong>
+            Фільтри товарів
+          </strong>
+        </p>
+        <hr>
+        <mat-expansion-panel class="my-2">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Пошук
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput placeholder="Search">
+            <button mat-icon-button matSuffix>
+              <mat-icon>
+                search
+              </mat-icon>
+            </button>
+          </mat-form-field>
+        </mat-expansion-panel>
+        <mat-expansion-panel class="my-2">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Фильтры
+            </mat-panel-title>
+            <mat-panel-description>
+              Выберите фильтры
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <section>
+            <mat-checkbox>1</mat-checkbox>
+            <mat-checkbox>2</mat-checkbox>
+            <mat-checkbox>3</mat-checkbox>
+            <mat-checkbox>4</mat-checkbox>
+          </section>
+        </mat-expansion-panel>
+        <mat-expansion-panel class="my-2">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Фільтр за ціною товару
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="d-flex flex-row justify-content-between align-items-baseline">
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="Від" type="number">
+
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="До" type="number">
+
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+        <hr>
+        <button mat-raised-button class="w-100 filter-button">Применить фильтры</button>
+      </div>
+      <mat-paginator
+        class="item2"
+        [length]="items.length"
+        [pageSize]="9"
+        (page)="onPageChange($event)"
+      >
+      </mat-paginator>
+      <div class="item3 custom-grid justify-content-center">
+        <div
+          [@fadeInOut]
+          class="item-card p-3 grid-item-border d-flex flex-column justify-content-between"
+          *ngFor="let item of pagedItems; let i = index"
+        >
+          <img [src]="item.imgSrc" class="mat-img-size">
+
+          <div>
+            <div>
+              <label [for]="productName" class="fw-bold"> Назва: </label>
+              <h3 class="truncate" #productName> {{ item.productName }} </h3>
+
+              <label [for]="productDescription" class="fw-bold"> Опис: </label>
+              <p class="truncate" #productDescription> {{ item.description }} </p>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <div matTooltip="Рейтинг">
+                <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                  <mat-icon [ngClass]="{ 'filled': i < getRating(item) }">
+                    {{ i < getRating(item) ? 'star' : 'star_outline' }}
+                  </mat-icon>
+                </ng-container>
+              </div>
+              <div class="d-flex">
+                <mat-icon
+                  matRipple
+                  [matRippleCentered]="true"
+                  [matRippleUnbounded]="true"
+                  matTooltip="Відгуки"
+                >
+                  chat
+                </mat-icon>
+                <span> {{ item.comments?.length ?? 0 }} </span>
+              </div>
+            </div>
+          </div>
+
+          <span>
+            <span class="fw-bold"> Ціна: </span>
+            {{ item.price | currency: 'UAH': 'symbol-narrow': '1.0-0' | slice: 1 }}
+            {{
+              ((item.price | currency: 'UAH': 'symbol-narrow': '1.0-0')?.charAt(0) || '')
+            }}
+          </span>
+
+          <div class="d-flex justify-content-between shadow-menu-item">
+            <button
+              mat-button
+              class="d-flex justify-content-center"
+              [disabled]="getQualityId(item)"
+              matTooltip="Придбати"
+            >
+              <mat-icon class="icon-size-30px">
+                shopping_cart
+              </mat-icon>
+            </button>
+
+            <button
+              mat-button
+              class="d-flex justify-content-center"
+              [disabled]="getQualityId(item)"
+              (click)="!getQualityId(item) ? onAddToShoppingCard(item) : null"
+              matTooltip="У кошик"
+            >
+              <mat-icon class="icon-size-30px">
+                add_shopping_cart
+              </mat-icon>
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+</div>

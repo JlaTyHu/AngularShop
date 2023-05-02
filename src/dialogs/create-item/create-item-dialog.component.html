@@ -1,0 +1,79 @@
+<div class="d-flex flex-row justify-content-between align-items-start">
+  <h1> Створення нового товару </h1>
+  <button mat-button mat-dialog-close class="d-flex justify-content-center">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-form-field appearance="outline">
+  <mat-label> Назва товару </mat-label>
+  <input
+    matInput
+    required
+    #nameInput
+    placeholder="Товар..."
+    [(ngModel)]="productItem.productName"
+    [maxLength]="30"
+  >
+  <mat-hint align="end"> {{ nameInput.value.length + '/' + 30 }} </mat-hint>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label> Опис </mat-label>
+  <input
+    matInput
+    required
+    #descriptionInput
+    placeholder="Опис..."
+    [(ngModel)]="productItem.description"
+    [maxLength]="100"
+  >
+  <mat-hint align="end"> {{ descriptionInput.value.length + '/' + 100 }} </mat-hint>
+</mat-form-field>
+
+<mat-form-field appearance="outline">
+  <mat-label> Силка на картинку </mat-label>
+  <input matInput required placeholder="Силка..." [(ngModel)]="imageUrl" (ngModelChange)="onImageUrlChange($event)">
+</mat-form-field>
+<img
+  *ngIf="!!productItem.imgSrc"
+  [@fadeIn]="imageLoaded"
+  (load)="onImageLoad()"
+  class="img-animation"
+  [src]="productItem.imgSrc"
+  (error)="onErrorImg()"
+  [ngStyle]="{ width: '100%', height: '200px' }
+">
+
+<mat-form-field appearance="outline">
+  <mat-label> Ціна товару </mat-label>
+  <input
+    matInput
+    required
+    type="number"
+    placeholder="Ціна..."
+    #priceInput
+    [(ngModel)]="productItem.price"
+    (input)="priceInput.value = priceInput.value.slice(0, 6)"
+  >
+  <mat-hint align="end"> {{ priceInput.value.length + '/' + 6 }} </mat-hint>
+</mat-form-field>
+
+<div class="d-flex justify-content-between align-items-center">
+  <button
+    mat-raised-button
+    mat-dialog-close
+    [disabled]="disableButton()"
+    (click)="onCreateItem()"
+  >
+    Створити
+  </button>
+  <button
+    mat-raised-button
+    color="warn"
+    mat-dialog-close
+  >
+    Повернутися
+  </button>
+</div>
+

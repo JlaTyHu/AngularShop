@@ -1,0 +1,12 @@
+.footer-bg-color {
+  background: #333333;
+  height: 200px;
+  opacity: 0.1;
+}
+
+.divider {
+  border-top-width: 2px;
+  border-top-color: #333333;
+  opacity: 1;
+  box-shadow: 5px 0px 10px black;
+}

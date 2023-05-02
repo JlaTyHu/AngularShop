@@ -1,0 +1,16 @@
+.single-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 16px 0;
+}
+
+.both-btn {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-btn {
+  width: 200px;
+}
+

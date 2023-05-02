@@ -1,0 +1,157 @@
+<!--<div class="main-content">-->
+<!--  <mat-tab-group dynamicHeight mat-stretch-tabs="false" mat-align-tabs="start">-->
+<!--    <mat-tab label="Усі товари">-->
+
+<!--      <button (click)="onAddItem()">Click me</button>-->
+
+<!--      <div class="d-flex justify-content-center">-->
+<!--        <div class="grid-container shadow-settings">-->
+<!--          <div class="item1 border-hr-line position-relative" [ngStyle]="{ width: '350px', padding: '20px' }">-->
+<!--            <p>-->
+<!--              <strong>-->
+<!--                Фільтри товарів-->
+<!--              </strong>-->
+<!--            </p>-->
+<!--            <hr>-->
+<!--            <mat-expansion-panel class="my-2">-->
+<!--              <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                  Пошук-->
+<!--                </mat-panel-title>-->
+<!--              </mat-expansion-panel-header>-->
+
+<!--              <mat-form-field appearance="outline" class="w-100">-->
+<!--                <input matInput placeholder="Search">-->
+<!--                <button mat-icon-button matSuffix>-->
+<!--                  <mat-icon>-->
+<!--                    search-->
+<!--                  </mat-icon>-->
+<!--                </button>-->
+<!--              </mat-form-field>-->
+<!--            </mat-expansion-panel>-->
+<!--            <mat-expansion-panel class="my-2">-->
+<!--              <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                  Фильтры-->
+<!--                </mat-panel-title>-->
+<!--                <mat-panel-description>-->
+<!--                  Выберите фильтры-->
+<!--                </mat-panel-description>-->
+<!--              </mat-expansion-panel-header>-->
+
+<!--              &lt;!&ndash; Здесь разместите содержимое панели с фильтрами &ndash;&gt;-->
+<!--              <section>-->
+<!--                <mat-checkbox>1</mat-checkbox>-->
+<!--                <mat-checkbox>2</mat-checkbox>-->
+<!--                <mat-checkbox>3</mat-checkbox>-->
+<!--                <mat-checkbox>4</mat-checkbox>-->
+<!--              </section>-->
+<!--            </mat-expansion-panel>-->
+
+<!--            <mat-expansion-panel class="my-2">-->
+<!--              <mat-expansion-panel-header>-->
+<!--                <mat-panel-title>-->
+<!--                  Фільтр за ціною товару-->
+<!--                </mat-panel-title>-->
+<!--              </mat-expansion-panel-header>-->
+<!--              <div class="d-flex flex-row justify-content-between align-items-baseline">-->
+<!--                <mat-form-field appearance="outline">-->
+<!--                  <input matInput placeholder="Від" type="number">-->
+
+<!--                </mat-form-field>-->
+<!--                <mat-form-field appearance="outline">-->
+<!--                  <input matInput placeholder="До" type="number">-->
+
+<!--                </mat-form-field>-->
+<!--              </div>-->
+<!--            </mat-expansion-panel>-->
+<!--            <hr>-->
+<!--            <button mat-raised-button class="w-100 filter-button">Применить фильтры</button>-->
+<!--          </div>-->
+<!--          <mat-paginator-->
+<!--            class="item2"-->
+<!--            [length]="items.length"-->
+<!--            [pageSize]="9"-->
+<!--            (page)="onPageChange($event)"-->
+<!--          >-->
+<!--          </mat-paginator>-->
+<!--          <div class="item3 custom-grid justify-content-center">-->
+<!--            <div-->
+<!--              [@fadeInOut]-->
+<!--              class="item-card p-3 grid-item-border"-->
+<!--              *ngFor="let item of pagedItems; let i = index"-->
+<!--            >-->
+<!--              <div>-->
+<!--                <img-->
+<!--                  src="https://material.angular.io/assets/img/examples/shiba2.jpg"-->
+<!--                  class="mat-img-size"-->
+<!--                >-->
+<!--                <div class="pt-3">-->
+<!--                  <h3> {{ item }} </h3>-->
+<!--                  <div class="d-flex justify-content-between">-->
+<!--                    <div>-->
+<!--                      <ng-container *ngFor="let star of rating">-->
+<!--                        <ng-container *ngIf="star; else voidStar">-->
+<!--                          <mat-icon class="font-size-20px star">-->
+<!--                            star-->
+<!--                          </mat-icon>-->
+<!--                        </ng-container>-->
+
+<!--                        <ng-template #voidStar>-->
+<!--                          <mat-icon class="font-size-20px star">-->
+<!--                            star_border-->
+<!--                          </mat-icon>-->
+<!--                        </ng-template>-->
+<!--                      </ng-container>-->
+<!--                    </div>-->
+<!--                    <div class="d-flex">-->
+<!--                      <mat-icon-->
+<!--                        matRipple-->
+<!--                        [matRippleCentered]="true"-->
+<!--                        [matRippleUnbounded]="true"-->
+<!--                        matTooltip="Відгуки"-->
+<!--                      >-->
+<!--                        chat-->
+<!--                      </mat-icon>-->
+<!--                      (37)-->
+<!--                    </div>-->
+<!--                  </div>-->
+
+<!--                  <p> Ціна: 100$ </p>-->
+
+<!--                  <div class="d-flex justify-content-between">-->
+<!--                    <mat-icon-->
+<!--                      matRipple-->
+<!--                      [matRippleCentered]="true"-->
+<!--                      [matRippleUnbounded]="true"-->
+<!--                      class="icon-size-30px"-->
+<!--                      matTooltip="Придбати"-->
+<!--                    >-->
+<!--                      shopping_cart-->
+<!--                    </mat-icon>-->
+<!--                    <mat-icon-->
+<!--                      matRipple-->
+<!--                      [matRippleCentered]="true"-->
+<!--                      [matRippleUnbounded]="true"-->
+<!--                      class="icon-size-30px"-->
+<!--                      matTooltip="У кошик"-->
+<!--                    >-->
+<!--                      add_shopping_cart-->
+<!--                    </mat-icon>-->
+<!--                  </div>-->
+
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+
+<!--      </div>-->
+<!--      <br>-->
+<!--    </mat-tab>-->
+<!--    <mat-tab label="Мої товари">Content 2</mat-tab>-->
+<!--    <mat-tab label="Як користуватися">Content 3</mat-tab>-->
+<!--  </mat-tab-group>-->
+<!--</div>-->
+HOME
