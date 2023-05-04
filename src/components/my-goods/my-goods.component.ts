@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -17,6 +17,9 @@ import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateItemDialogComponent } from '../../dialogs/create-item/create-item-dialog.component';
+import { CreateItemService } from '../../services/create-item.service';
+import { ProductItem } from '../../models/product-item';
+import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
   selector: 'app-all-goods',
@@ -45,19 +48,27 @@ import { CreateItemDialogComponent } from '../../dialogs/create-item/create-item
     ]),
   ]
 })
-export class MyGoodsComponent {
+export class MyGoodsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  items: string[] = [];
+  items: ProductItem[] = [];
   pagedItems = this.items.slice(0, 9);
   isExpanded!: string;
   rating: boolean[] = [true, true, false, false, false];
+  authorId!: string | number;
+
   constructor(
     private store: Store<State>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authenticationService: AuthenticationService,
+    private createItemService: CreateItemService
   ) { }
 
+  ngOnInit() {
+    this.authorId = this.authenticationService.getAccountId();
+    this.initMyGoods();
+  }
+
   onAddItem() {
-    this.items.push(`Item ${this.items.length + 1}`);
     this.onPageChange({
       pageIndex: this.paginator.pageIndex,
       pageSize: this.paginator.pageSize,
@@ -76,5 +87,15 @@ export class MyGoodsComponent {
     const ref = this.dialog.open(CreateItemDialogComponent, {
       width: '30%'
     });
+  }
+
+  private initMyGoods() {
+    this.items = JSON.parse(localStorage.getItem('items')?? '[]')
+      .filter((item: ProductItem) => item.author?.id == this.authorId);
+    this.pagedItems = this.items.slice(0, 9);
+  }
+
+  getRating(item: ProductItem): number {
+    return item?.rating?.number ?? 0;
   }
 }

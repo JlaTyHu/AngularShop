@@ -56,5 +56,4 @@ import { CreateItemDialogModule } from '../../dialogs/create-item/create-item-di
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

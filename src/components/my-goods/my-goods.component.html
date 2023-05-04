@@ -27,65 +27,73 @@
       <div class="item3 custom-grid justify-content-center">
         <div
           [@fadeInOut]
-          class="item-card p-3 grid-item-border"
+          class="item-card p-3 grid-item-border d-flex flex-column justify-content-between"
           *ngFor="let item of pagedItems; let i = index"
         >
+          <img [src]="item.imgSrc" class="mat-img-size">
+
           <div>
-            <img
-              src="https://material.angular.io/assets/img/examples/shiba2.jpg"
-              class="mat-img-size"
-            >
-            <div class="pt-3">
-              <h3> {{ item }} </h3>
-              <div class="d-flex justify-content-between">
-                <div>
-                  <ng-container *ngFor="let star of rating">
-                    <ng-container *ngIf="star; else voidStar">
-                      <mat-icon class="font-size-20px star">
-                        star
-                      </mat-icon>
-                    </ng-container>
-                    <ng-template #voidStar>
-                      <mat-icon class="font-size-20px star">
-                        star_border
-                      </mat-icon>
-                    </ng-template>
-                  </ng-container>
-                </div>
-                <div class="d-flex">
-                  <mat-icon
-                    matRipple
-                    [matRippleCentered]="true"
-                    [matRippleUnbounded]="true"
-                    matTooltip="Відгуки"
-                  >
-                    chat
+            <div>
+              <label [for]="productName" class="fw-bold"> Назва: </label>
+              <h3 class="truncate" #productName> {{ item.productName }} </h3>
+
+              <label [for]="productDescription" class="fw-bold"> Опис: </label>
+              <p class="truncate" #productDescription> {{ item.description }} </p>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <div matTooltip="Рейтинг">
+                <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                  <mat-icon [ngClass]="{ 'filled': i < getRating(item) }">
+                    {{ i < getRating(item) ? 'star' : 'star_outline' }}
                   </mat-icon>
-                  (37)
-                </div>
+                </ng-container>
               </div>
-              <p> Ціна: 100$ </p>
-              <div class="d-flex justify-content-between">
+              <div class="d-flex">
                 <mat-icon
                   matRipple
                   [matRippleCentered]="true"
                   [matRippleUnbounded]="true"
-                  class="icon-size-30px"
-                  matTooltip="Придбати"
+                  matTooltip="Відгуки"
                 >
-                  shopping_cart
+                  chat
                 </mat-icon>
-                <mat-icon
-                  matRipple
-                  [matRippleCentered]="true"
-                  [matRippleUnbounded]="true"
-                  class="icon-size-30px"
-                  matTooltip="У кошик"
-                >
-                  add_shopping_cart
-                </mat-icon>
+                <span> {{ item.comments?.length ?? 0 }} </span>
               </div>
             </div>
+          </div>
+
+          <span>
+            <span class="fw-bold"> Ціна: </span>
+            {{ item.price | currency: 'UAH': 'symbol-narrow': '1.0-0' | slice: 1 }}
+            {{
+              ((item.price | currency: 'UAH': 'symbol-narrow': '1.0-0')?.charAt(0) || '')
+            }}
+          </span>
+
+          <div class="d-flex justify-content-between shadow-menu-item">
+            <button
+              mat-button
+              class="d-flex justify-content-center"
+              [disabled]="true"
+              matTooltip="Придбати"
+            >
+              <mat-icon class="icon-size-30px">
+                shopping_cart
+              </mat-icon>
+            </button>
+
+            <button
+              mat-button
+              class="d-flex justify-content-center"
+              [disabled]="true"
+              matTooltip="У кошик"
+            >
+              <mat-icon class="icon-size-30px">
+                add_shopping_cart
+              </mat-icon>
+            </button>
+
           </div>
         </div>
       </div>

@@ -53,6 +53,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAuthorized: boolean = false;
   subscription: Subscription = new Subscription();
   items: ProductItem[] = [];
+  isHoveredProfile = false;
 
   constructor(
     private dialog: MatDialog,
@@ -111,5 +112,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthenticationLogoutRequest());
+  }
+
+  handleClick(event: MouseEvent, action: boolean) {
+    if (action) {
+      event.stopPropagation();
+    }
   }
 }

@@ -17,7 +17,7 @@ mat-tab {
 
 .mat-img-size {
   width: 100%;
-  height: 75%;
+  height: 120px;
   border-radius: 5px;
 }
 
@@ -125,7 +125,17 @@ mat-icon.star {
   color: #FFC107;
 }
 
-.btn-create {
-  background-color: rgba(51, 51, 51, 0.5);
+.filter-button {
+  background-color: #333333;
   color: white;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button-settings {
+  bottom: 16px;
 }
