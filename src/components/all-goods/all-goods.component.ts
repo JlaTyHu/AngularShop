@@ -20,6 +20,10 @@ import { ProductItem } from '../../models/product-item';
 import { Subscription } from 'rxjs';
 import { AuthenticationService } from '../../services/authentication.service';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ItemInfoComponent } from '../../dialogs/item-info/item-info.component';
+import { ErrorDialogComponent } from '../../dialogs/error-dialog/error-dialog.component';
+import { PurchaseOfGoodsComponent } from '../../dialogs/purchase-of-goods/purchase-of-goods.component';
 
 @Component({
   selector: 'app-all-goods',
@@ -57,12 +61,14 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
   rating: boolean[] = [true, true, false, false, false];
   stars = [1, 2, 3, 4, 5];
   subscription: Subscription = new Subscription();
+  currentRating: number[] = [];
 
   constructor(
     private store: Store<State>,
     private createItemService: CreateItemService,
     private authenticationService: AuthenticationService,
-    private shoppingCartService: ShoppingCartService
+    private shoppingCartService: ShoppingCartService,
+    private dialogRef: MatDialog
   ) { }
 
   ngOnInit() {
@@ -76,12 +82,23 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
       }
     }));
     this.accountId = this.authenticationService.getAccountId();
+
+    this._fillCurrentRating();
   }
 
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  private _fillCurrentRating() {
+    this.currentRating = [];
+    this.items.map(item => this.currentRating.push(item.rating?.number?? 0))
+  }
+
+  onChangeRating(dig: number, index: number) {
+    this.currentRating[index] = dig;
   }
 
   initializeItems() {
@@ -99,8 +116,26 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
     this.pagedItems = this.items.slice(startIndex, startIndex + event.pageSize);
   }
 
+  onOpenItem(item: ProductItem, index?: number) {
+    if (index) {
+      this.dialogRef.open(ItemInfoComponent, { data: { product: item, selectedTabIndex: index }, width: 'fit-content' });
+    } else {
+      this.dialogRef.open(ItemInfoComponent, { data: { product: item }, width: 'fit-content' });
+    }
+  }
+
   getRating(item: ProductItem): number {
     return item?.rating?.number ?? 0;
+  }
+
+  onShowRating(event: Event, item: ProductItem, index: number) {
+    event.stopPropagation();
+    this.onOpenItem(item, index);
+  }
+
+  onBuyItem(event: Event, item: ProductItem) {
+    event.stopPropagation();
+    this.dialogRef.open(PurchaseOfGoodsComponent);
   }
 
   getQualityId(product: ProductItem): boolean {
@@ -111,5 +146,13 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
 
   onAddToShoppingCard(item: ProductItem) {
     this.shoppingCartService.addToCart(item);
+  }
+
+  get onUserAuth(): boolean {
+    return !!this.authenticationService.getAccountId();
+  }
+
+  onMouseOver(index: number) {
+    this._fillCurrentRating();
   }
 }

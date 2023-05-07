@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-between position-relative" style="width: fit-content; min-width: 1050px;">
+  <mat-tab-group
+    mat-stretch-tabs="false"
+    mat-align-tabs="start"
+    class="menu-position w-100"
+    [selectedIndex]="selectedTabIndex"
+  >
+    <mat-tab label="Товар">
+      <div class="d-flex justify-content-between mt-2">
+        <div class="me-4 d-flex flex-column">
+          <img [src]="item.imgSrc" class="item-img">
+
+          <div matTooltip="Рейтинг" class="d-flex justify-content-center my-3" style="color: gold">
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+              <mat-icon [ngClass]="{ 'filled': i < (item.rating?.number || 0) }">
+                {{ i < (item.rating?.number || 0) ? 'star' : 'star_outline' }}
+              </mat-icon>
+            </ng-container>
+          </div>
+
+          <div class="d-flex flex-row justify-content-around">
+            <p> Автор: {{ item.author?.login }} </p>
+            <p> Видгукив: {{ item.comments?.length }} </p>
+            <p> Товар придбало: 2 </p>
+          </div>
+
+          <div class="d-flex justify-content-around">
+            <button class="action-btn"> Придбати цей товар </button>
+            <button class="action-btn"> Додати товар до кошика </button>
+          </div>
+
+          <br>
+        </div>
+
+        <div class="text-hyphens">
+          <h2 class="opacity-50"> Назва товару </h2>
+          <h2> {{ item.productName }} </h2>
+
+          <h2 class="opacity-50"> Опис товару </h2>
+          <p> {{ item.description }} </p>
+        </div>
+
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Характеристики"> Content 2 </mat-tab>
+
+    <mat-tab label="Відгуки">
+      <div class="d-flex justify-content-between align-items-center flex-row review-block w-100 mt-2">
+        <h3 class="m-0"> Залишити відгук про товар </h3>
+        <button class="action-btn"> Залишити відгук </button>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3" style="min-height: 200px">
+        <h2 *ngIf="!item.comments?.length" class="opacity-75 font-weight-700"> На цей товар ще не було відгуків. </h2>
+
+        <div *ngIf="item.comments?.length">
+          <div *ngFor="let comment of item.comments" class="review-block my-3">
+            <div class="d-flex justify-content-between"> <!-- USER INFO -->
+              <div class="d-flex flex-row">
+                <!-- <img [src]="user.avatar">-->  <!-- NEED ADD USER AVATAR -->
+                <span> {{ comment.author?.login }} </span>
+              </div>
+
+              <span> {{ comment.rating }} </span>
+
+              <span> {{ comment.dateCreate }} </span>
+            </div>
+
+            <hr>
+
+            <div>
+              {{ comment.commentText }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <mat-form-field *ngIf="false" appearance="outline" class="w-100 my-2">
+        <mat-label>Textarea</mat-label>
+        <input matInput>
+        <button class="action-btn position-absolute" style="right: 0; top: 50%">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+            <path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>
+          </svg>
+        </button>
+      </mat-form-field>
+    </mat-tab>
+  </mat-tab-group>
+
+  <button mat-dialog-close class="btn-item position-absolute" style="right: 0; z-index: 100">
+    <svg class="modal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+      <path
+        d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+    </svg>
+  </button>
+</div>
+

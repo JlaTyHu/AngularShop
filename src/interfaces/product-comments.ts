@@ -1,6 +1,7 @@
 export interface IProductComments {
-  authorId?: number;
+  author?: { id: number, login: string };
   commentText?: string;
   rating?: number;
   isBought?: boolean;
+  dateCreate?: Date;
 }

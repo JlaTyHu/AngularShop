@@ -61,7 +61,7 @@ export class AuthenticationService {
   }
 
   getAuthStatus(): boolean {
-    let isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
+    const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
     return isAuthenticated;
   }
 

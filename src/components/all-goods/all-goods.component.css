@@ -36,6 +36,8 @@ mat-card {
 
 .item-card {
   transition: 0.3s all ease-in-out;
+  padding: 10px;
+  height: 400px;
 }
 
 mat-card-title {
@@ -63,15 +65,11 @@ mat-card-header {
   padding: 10px;
 }
 
-.item-card {
-  padding: 10px;
-}
-
 .custom-grid {
   display: grid;
-  grid-template-rows: repeat(3, 350px);
+  grid-template-rows: repeat(3, 400px);
   grid-template-columns: repeat(3, 250px);
-  min-height: 350px;
+  min-height: 400px;
 }
 
 .grid-item-border {
@@ -98,10 +96,12 @@ mat-card-header {
 
 .item1 {
   grid-area: item1;
+  background: #00000008;
 }
 
 .item2 {
   grid-area: item2;
+  background: #00000008;
 }
 
 .item3 {
@@ -138,4 +138,28 @@ mat-icon.star {
 
 .button-settings {
   bottom: 16px;
+}
+
+.btn-card-item {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #00000026;
+  border-radius: 5px;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+  transition: 0.3s all ease-in-out;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.btn-card-item:hover {
+  background: rgb(255, 255, 255);
+}
+
+.icon-card-menu {
+  width: 20px;
+  height: 20px;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

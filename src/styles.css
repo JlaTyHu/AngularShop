@@ -12,3 +12,18 @@ body {
 .mat-mdc-dialog-surface {
   padding: 20px;
 }
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cccccc;
+  border-radius: 5px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cccccc;
+}

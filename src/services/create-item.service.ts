@@ -18,11 +18,13 @@ export class CreateItemService {
     const maxId = items.reduce((max, item) => item.productId > max ? item.productId : max, 0);
     const newId = maxId + 1;
     const authorId = localStorage.getItem('account');
+    const user = JSON.parse(localStorage.getItem('users')?? '[]').find((user: any) => user.id == authorId);
     const newItem: ProductItem = {
       ...item,
       productId: newId,
       author: {
-        id: JSON.parse(authorId ?? '')
+        id: JSON.parse(authorId ?? ''),
+        login: user.login
       },
       rating: {
         number: 0,

@@ -48,11 +48,7 @@ section {
 }
 
 .border-menu-item {
-  /*border-bottom: 1px solid rgba(51, 51, 51, 0.3);*/
-  /*border-radius: 5px;*/
-  /*border-bottom: none;*/
   box-shadow: 0 1px 3px rgba(0,0,0,.2);
-
 }
 
 .truncate {
@@ -100,13 +96,15 @@ section {
   border-radius: 5px;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.4);
   transition: 0.3s all ease-in-out;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .btn-navigation-menu:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgb(255, 255, 255);
+  box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.4);
 }
 
-.icon-navigation-menu {
+.icon-navigation-menu, .icon-shopping-car-menu {
   width: 22px;
   height: 22px;
   fill: #8b8b8b;
@@ -127,6 +125,25 @@ section {
   width: 105px;
 }
 
-.element-appearance {
-  /*transition: 0.6s all ease-in-out;*/
+.menu-auth-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-shopping-cart-menu {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #00000026;
+  border-radius: 5px;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.4);
+  transition: 0.3s all ease-in-out;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.btn-shopping-cart-menu:hover {
+  background: rgb(255, 255, 255);
+}
+
+.btn-shopping-cart-menu:hover .icon-navigation-menu {
+  fill: black;
 }
