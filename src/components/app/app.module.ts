@@ -21,6 +21,7 @@ import { ErrorDialogModule } from '../../dialogs/error-dialog/error-dialog.modul
 import { FooterComponent } from '../footer/footer.component';
 import { AuthenticationMessagesEffects } from '../../store/effects/authentication-messages.effects';
 import { CreateItemDialogModule } from '../../dialogs/create-item/create-item-dialog.module';
+import { PurchaseOfGoodsModule } from '../../dialogs/purchase-of-goods/purchase-of-goods.module';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { CreateItemDialogModule } from '../../dialogs/create-item/create-item-di
     AuthenticationDialogModule,
     ErrorDialogModule,
     CreateItemDialogModule,
+    PurchaseOfGoodsModule,
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 999

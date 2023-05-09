@@ -21,27 +21,48 @@
 
   <mat-form-field appearance="outline" class="w-100 mt-3">
     <mat-label> Введіть номер картки </mat-label>
-    <input matInput type="number" placeholder="1234123412341234" [(ngModel)]="cardNumber" required>
+    <input
+      matInput
+      type="text"
+      placeholder="1234 1234 1234 1234"
+      [(ngModel)]="cardNumber"
+      (input)="onInputCardNumber($event)"
+      required
+      [value]="cardNumber | cardNumberPipe"
+      minlength="19"
+      maxlength="19">
   </mat-form-field>
 
   <div class="d-flex flex-row justify-content-between mt-3">
     <mat-form-field appearance="outline" class="w-40">
-      <mat-label> Дата </mat-label>
-      <input matInput placeholder="01/01" [(ngModel)]="cardDate" required [maxLength]="5" [matDatepicker]="picker">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker startView="multi-year" (yearSelected)="chosenYearHandler($event)" (monthSelected)="chosenMonthHandler($event, picker)"></mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field>
-      <input matInput [matDatepicker]="picker" placeholder="Выберите месяц и день" [(ngModel)]="date">
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker startView="multi-year" (yearSelected)="chosenYearHandler($event)" (monthSelected)="chosenMonthHandler($event, picker)"></mat-datepicker>
+      <mat-label> Дата карти </mat-label>
+      <input matInput type="text" [(ngModel)]="cardDate" (input)="onInput($event)" required maxlength="5" minlength="5">
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-40">
       <mat-label> CVV2 </mat-label>
       <input matInput type="number" placeholder="1234" [(ngModel)]="cardCVV2" required [maxLength]="3">
     </mat-form-field>
+  </div>
+
+  <div class="d-flex flex-row justify-content-between mt-3">
+    <mat-form-field appearance="outline" class="w-40">
+      <mat-label> Кількість товару </mat-label>
+      <input matInput type="number" placeholder="..." required (input)="onChange($event)">
+    </mat-form-field>
+
+    <div class="d-flex flex-column">
+      <p> Загальна ціна: </p>
+      <span> {{ this.item.price * amount }} грн </span>
+    </div>
+  </div>
+
+  <div class="d-flex flex-row mt-3 item-block">
+    <img [src]="item.imgSrc" class="item-img">
+
+    <div class="ms-3 d-flex justify-content-center">
+      <p> {{ item.productName }} </p>
+    </div>
   </div>
 
   <div class="d-flex flex-row justify-content-between mt-3">

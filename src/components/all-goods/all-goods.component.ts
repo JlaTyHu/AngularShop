@@ -135,7 +135,8 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
 
   onBuyItem(event: Event, item: ProductItem) {
     event.stopPropagation();
-    this.dialogRef.open(PurchaseOfGoodsComponent);
+    const ref = this.dialogRef.open(PurchaseOfGoodsComponent);
+    ref.componentInstance.item = item;
   }
 
   getQualityId(product: ProductItem): boolean {

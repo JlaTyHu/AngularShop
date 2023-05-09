@@ -1,40 +1,18 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatRippleModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { MatInputModule } from '@angular/material/input';
 
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { CreateItemService } from '../../services/create-item.service';
 import { ProductItem } from '../../models/product-item';
 import { AuthenticationService } from '../../services/authentication.service';
-import { FormsModule } from '@angular/forms';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-all-goods',
   templateUrl: './purchase-of-goods.component.html',
   styleUrls: ['./purchase-of-goods.component.css'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatRippleModule,
-    MatTooltipModule,
-    MatInputModule,
-    MatDialogModule,
-    FormsModule,
-    MatDatepickerModule,
-    MatNativeDateModule
-  ],
   animations: [
     trigger('fadeInOut', [
       state('void', style({
@@ -45,12 +23,13 @@ import { MatNativeDateModule } from '@angular/material/core';
   ]
 })
 export class PurchaseOfGoodsComponent implements OnInit {
+  item!: ProductItem;
   cardNumber = '';
-  cardDate: Date = new Date();
+  cardDate = '';
   cardCVV2!: number;
   userInfo: { name: string, surname: string } = { name: '', surname: '' };
   isSubmitted = false;
-  date!: Date;
+  amount = 0;
 
   constructor(
     private store: Store<State>,
@@ -73,18 +52,36 @@ export class PurchaseOfGoodsComponent implements OnInit {
       && !!this.cardCVV2
       && !!this.userInfo.name
       && !!this.userInfo.surname
+      && !!this.amount
   }
 
-  chosenYearHandler(normalizedYear: Date) {
-    const ctrlValue = this.date;
-    ctrlValue.setFullYear(normalizedYear.getFullYear());
-    this.date = ctrlValue;
+  onInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let { value } = input;
+    value = value.replace(/\D/g, '');
+    if (value.length > 2) {
+      value = `${value.slice(0, 2)}/${value.slice(2)}`;
+    }
+    input.value = value;
   }
 
-  chosenMonthHandler(normalizedMonth: Date, datepicker: MatDatepicker<Date>) {
-    const ctrlValue = this.date;
-    ctrlValue.setMonth(normalizedMonth.getMonth());
-    this.date = ctrlValue;
-    datepicker.close();
+  onInputCardNumber(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let { value } = input;
+    // value = value.replace(/\D/g, '');
+    this.cardNumber = value;
+  }
+
+  onChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let { value } = input;
+    if (value.toString()[0] == '0') {
+      value = '1' + value.toString().slice(1);
+    }
+    if (value.length > 2) {
+      value = value.slice(0, 2);
+    }
+    input.value = value;
+    this.amount = +input.value;
   }
 }
