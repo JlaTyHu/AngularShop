@@ -22,6 +22,8 @@ import { FooterComponent } from '../footer/footer.component';
 import { AuthenticationMessagesEffects } from '../../store/effects/authentication-messages.effects';
 import { CreateItemDialogModule } from '../../dialogs/create-item/create-item-dialog.module';
 import { PurchaseOfGoodsModule } from '../../dialogs/purchase-of-goods/purchase-of-goods.module';
+import { HeaderModule } from '../header/header.module';
+import { UserProfileModule } from '../user-profile/user-profile.module';
 
 @NgModule({
   declarations: [
@@ -30,8 +32,9 @@ import { PurchaseOfGoodsModule } from '../../dialogs/purchase-of-goods/purchase-
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HeaderComponent,
+    HeaderModule,
     FooterComponent,
+    UserProfileModule,
     AuthenticationDialogModule,
     ErrorDialogModule,
     CreateItemDialogModule,

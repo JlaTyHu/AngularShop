@@ -9,12 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { PurchaseOfGoodsComponent } from './purchase-of-goods.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
-  declarations: [
-    PurchaseOfGoodsComponent,
-    CardNumberPipe
-  ],
+  declarations: [PurchaseOfGoodsComponent, CardNumberPipe],
   imports: [
     CommonModule,
     MatButtonModule,
@@ -23,10 +21,9 @@ import { PurchaseOfGoodsComponent } from './purchase-of-goods.component';
     MatTooltipModule,
     MatInputModule,
     MatDialogModule,
-    FormsModule
+    FormsModule,
+    DragDropModule
   ],
-  exports: [
-    PurchaseOfGoodsComponent
-  ],
+  exports: [PurchaseOfGoodsComponent],
 })
-export class PurchaseOfGoodsModule { }
+export class PurchaseOfGoodsModule {}

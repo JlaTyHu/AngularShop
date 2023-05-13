@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
 import { CreateItemService } from '../../services/create-item.service';
 import { ProductItem } from '../../models/product-item';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { imgNotFound } from '../../consts/img-not-found.const';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-create-item',
@@ -18,6 +19,28 @@ import { imgNotFound } from '../../consts/img-not-found.const';
       state('false', style({ opacity: 0 })),
       state('true', style({ opacity: 1 })),
       transition('false => true', animate('300ms ease-in-out'))
+    ]),
+    trigger('drawAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('.5s', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('.5s', style({ opacity: 0 })),
+      ]),
+    ]),
+    trigger('dialogExpand', [
+      state('expanded', style({
+        height: '500px',
+        width: '550px'
+      })),
+      transition('void => expanded', [
+        style({ height: '0', width: '0' }),
+        animate('300ms ease-in')
+      ]),
+      transition('expanded => void', [
+        animate('300ms ease-out', style({ height: '0', width: '0' }))
+      ])
     ])
   ]
 })
@@ -26,17 +49,54 @@ export class CreateItemDialogComponent implements OnInit {
   productItem: ProductItem = new ProductItem();
   imageUrl: string = '';
   imageLoaded = false;
+  properties: { name: string, type: string, isEditMode: boolean }[] = [];
+  dialogProperty = 'expanded';
 
   constructor(
     private dialogRef: MatDialogRef<CreateItemDialogComponent>,
     private fb: FormBuilder,
     private createItemService: CreateItemService,
-    private store: Store<State>
+    private store: Store<State>,
+    private _formBuilder: FormBuilder
   ) {
   }
 
   ngOnInit() {
 
+  }
+
+  isPropertyFiledNotEmpty(index: number): boolean {
+    return !!(this.properties[index].name && this.properties[index].type);
+  }
+
+  progressBarColor(index: number): string {
+    if (this.properties[index].name && this.properties[index].type) {
+      return 'primary';
+    } else {
+      return 'warn';
+    }
+  }
+
+  progressBarValue(index: number): number {
+    if (this.properties[index].name && this.properties[index].type) {
+      return 100;
+    } else if (this.properties[index].name || this.properties[index].type) {
+      return 50;
+    } else {
+      return 0;
+    }
+  }
+
+  onAddPropertyField() {
+    this.properties.push({ name: '', type: '', isEditMode: true });
+  }
+
+  onDeleteProperty(index: number) {
+    this.properties.splice(index, 1);
+  }
+
+  drop(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.properties, event.previousIndex, event.currentIndex);
   }
 
   onImageLoad() {
@@ -48,18 +108,25 @@ export class CreateItemDialogComponent implements OnInit {
   }
 
   onCreateItem() {
-    this.createItemService.addItem(this.productItem);
+    const fullModel = { ...this.productItem, properties: this.properties };
+    console.log('@@ model ', fullModel)
+    this.createItemService.addItem(fullModel);
   }
 
-  disableButton(): boolean {
+  get disableButton(): boolean {
     return !this.productItem.productName
       || !this.productItem.description
       || !this.productItem.price
-      || !this.productItem.imgSrc;
+      || !this.productItem.imgSrc
+      || !this.properties.length
+      || !this.propertiesValid;
   }
 
   onErrorImg() {
-    console.log('@@ default img was set')
     this.productItem.imgSrc = imgNotFound;
+  }
+
+  get propertiesValid(): boolean {
+    return this.properties.every(property => !property.isEditMode);
   }
 }

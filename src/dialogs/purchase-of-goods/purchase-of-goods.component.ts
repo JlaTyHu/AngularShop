@@ -10,7 +10,7 @@ import { ProductItem } from '../../models/product-item';
 import { AuthenticationService } from '../../services/authentication.service';
 
 @Component({
-  selector: 'app-all-goods',
+  selector: 'app-goods',
   templateUrl: './purchase-of-goods.component.html',
   styleUrls: ['./purchase-of-goods.component.css'],
   animations: [

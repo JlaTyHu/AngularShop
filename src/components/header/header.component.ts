@@ -1,52 +1,28 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { AuthenticationDialogComponent } from '../../dialogs/authentication-dialog/authentication-dialog.component';
 import { AuthenticationEnum } from '../../enums/authentication.enum';
 import { AuthenticationService } from '../../services/authentication.service';
 import { State } from '../../store/app-state';
 import { Store } from '@ngrx/store';
 import { AuthenticationLogoutRequest } from '../../store/actions/authentication.actions';
-import { MatInputModule } from '@angular/material/input';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatRippleModule } from '@angular/material/core';
 import { Router } from '@angular/router';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Subscription } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { ProductItem } from '../../models/product-item';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
+import {
+  CdkDragDrop, CdkDragEnd, CdkDragExit,
+  moveItemInArray,
+  transferArrayItem
+} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatMenuModule,
-    MatDialogModule,
-    MatInputModule,
-    MatSidenavModule,
-    MatBadgeModule,
-    MatRippleModule,
-    MatProgressBarModule,
-    MatCardModule,
-    MatTooltipModule
-  ]
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   title = 'AngularShop';
@@ -61,14 +37,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private store: Store<State>,
     private router: Router,
     private shoppingCartService: ShoppingCartService
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
-    this.subscription.add(this.authenticationService.isAuthenticated.subscribe(flag => this.isAuthorized = flag));
+    this.subscription.add(this.authenticationService.isAuthenticated.subscribe(
+      (flag) => (this.isAuthorized = flag)
+    ));
     this.isAuthorized = this.authenticationService.getAuthStatus();
-    this.items = this.shoppingCartService.getCart();
-    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(items => this.items = items));
+    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
+      (items) => this.items = items
+    ));
+    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
+      (items) => (this.items = items)
+    ));
   }
 
   ngOnDestroy() {
@@ -77,30 +58,42 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  dragEnd(event: CdkDragEnd, itemId: number) {
+    const { x, y } = event.distance;
+    if (Math.abs(x) > 100 || Math.abs(y) > 125) {
+      this.items.splice(this.items.indexOf(event.source.data), 1);
+      this.onDeleteForShoppingCard(itemId);
+    }
+  }
+
   onNavigate(routName: string) {
     this.router.navigate([routName]);
   }
 
+  onClick(event: Event) {
+    event.stopPropagation();
+  }
+
   onAuthenticationDialog(formType: AuthenticationEnum) {
     let dialogRef!: MatDialogRef<AuthenticationDialogComponent, any>;
-    console.log('@@ hey ', formType)
+    console.log('@@ hey ', formType);
     switch (formType) {
       case AuthenticationEnum.Registration:
         dialogRef = this.dialog.open(AuthenticationDialogComponent, {
           data: {
             title: 'Registration',
-            formType: AuthenticationEnum.Registration
+            formType: AuthenticationEnum.Registration,
           },
-          width: '50%'
+          width: '50%',
         });
         break;
       case AuthenticationEnum.Authorization:
         dialogRef = this.dialog.open(AuthenticationDialogComponent, {
           data: {
             title: 'Authorization',
-            formType: AuthenticationEnum.Authorization
+            formType: AuthenticationEnum.Authorization,
           },
-          width: '50%'
+          width: '50%',
         });
         break;
     }
@@ -118,5 +111,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (action) {
       event.stopPropagation();
     }
+  }
+
+  drop(event: CdkDragDrop<ProductItem[], any>) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+    }
+  }
+
+  navigateToUserProfile() {
+    this.router.navigate(['/user-profile', JSON.parse(localStorage.getItem('account')?? '0')]);
   }
 }

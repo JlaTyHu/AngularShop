@@ -8,6 +8,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { MatInputModule } from '@angular/material/input';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
@@ -20,7 +21,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { IUser } from '../../interfaces/user';
 
 @Component({
-  selector: 'app-all-goods',
+  selector: 'app-goods',
   templateUrl: './item-info.component.html',
   styleUrls: ['./item-info.component.css'],
   standalone: true,
@@ -33,16 +34,33 @@ import { IUser } from '../../interfaces/user';
     MatTooltipModule,
     MatInputModule,
     MatTabsModule,
-    MatDialogModule
+    MatDialogModule,
+    DragDropModule,
   ],
   animations: [
     trigger('fadeInOut', [
-      state('void', style({
-        opacity: 0
-      })),
+      state(
+        'void',
+        style({
+          opacity: 0,
+        })
+      ),
       transition('void <=> *', animate(300)),
     ]),
-  ]
+    trigger('dialogExpand', [
+      state('expanded', style({
+        height: 'fit-content',
+        width: 'fit-content'
+      })),
+      transition('void => expanded', [
+        style({ height: '0', width: '0' }),
+        animate('300ms ease-in')
+      ]),
+      transition('expanded => void', [
+        animate('300ms ease-out', style({ height: '0', width: '0' }))
+      ])
+    ])
+  ],
 })
 export class ItemInfoComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -54,19 +72,21 @@ export class ItemInfoComponent implements OnInit {
   item!: ProductItem;
   user!: IUser;
   selectedTabIndex = 0;
+  dialogProperty = 'expanded';
 
   constructor(
     private store: Store<State>,
     private dialog: MatDialog,
     private authenticationService: AuthenticationService,
     private createItemService: CreateItemService,
-    @Inject(MAT_DIALOG_DATA) private data: { product: ProductItem, selectedTabIndex: number }
-  ) { }
+    @Inject(MAT_DIALOG_DATA)
+    private data: { product: ProductItem; selectedTabIndex: number }
+  ) {}
 
   ngOnInit() {
     this.item = this.data.product;
-    this.selectedTabIndex = this.data.selectedTabIndex?? 0;
-    console.log('@@ item ', this.item)
+    this.selectedTabIndex = this.data.selectedTabIndex ?? 0;
+    console.log('@@ item ', this.item);
     this.authorId = this.authenticationService.getAccountId();
     this.initMyGoods();
   }
@@ -75,10 +95,10 @@ export class ItemInfoComponent implements OnInit {
     this.onPageChange({
       pageIndex: this.paginator.pageIndex,
       pageSize: this.paginator.pageSize,
-      length: this.items.length
+      length: this.items.length,
     });
-    console.log('@@ array1 ', this.items)
-    console.log('@@ array2 ', this.paginator)
+    console.log('@@ array1 ', this.items);
+    console.log('@@ array2 ', this.paginator);
   }
 
   onPageChange(event: PageEvent) {
@@ -88,13 +108,14 @@ export class ItemInfoComponent implements OnInit {
 
   onCreateItem() {
     const ref = this.dialog.open(CreateItemDialogComponent, {
-      width: '30%'
+      width: '30%',
     });
   }
 
   private initMyGoods() {
-    this.items = JSON.parse(localStorage.getItem('items')?? '[]')
-      .filter((item: ProductItem) => item.author?.id == this.authorId);
+    this.items = JSON.parse(localStorage.getItem('items') ?? '[]').filter(
+      (item: ProductItem) => item.author?.id == this.authorId
+    );
     this.pagedItems = this.items.slice(0, 9);
   }
 

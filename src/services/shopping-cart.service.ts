@@ -3,39 +3,43 @@ import { BehaviorSubject } from 'rxjs';
 import { ProductItem } from '../models/product-item';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ShoppingCartService {
   shoppingCart: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
 
   constructor() {
-    this.loadCart();
+    this._loadCart();
   }
 
   addToCart(product: ProductItem) {
-    const itemList: ProductItem[] = JSON.parse(localStorage.getItem('shoppingCart')?? '[]');
+    const itemList: ProductItem[] = JSON.parse(
+      localStorage.getItem('shoppingCart') ?? '[]'
+    );
     itemList.push(product);
-    this.saveCart(itemList);
+    this._saveCart(itemList);
   }
 
   removeFromCart(index: number) {
-    const itemList: ProductItem[] = JSON.parse(localStorage.getItem('shoppingCart')?? '[]');
-    const newItemList = itemList.filter(item => item.productId != index);
-    this.saveCart(newItemList);
+    const itemList: ProductItem[] = JSON.parse(
+      localStorage.getItem('shoppingCart') ?? '[]'
+    );
+    const newItemList = itemList.filter((item) => item.productId != index);
+    this._saveCart(newItemList);
   }
 
-  getCart() {
-    return JSON.parse(localStorage.getItem('shoppingCart')?? '[]');
-  }
-
-  saveCart(item: ProductItem[]) {
+  private _saveCart(item: ProductItem[]) {
     localStorage.setItem('shoppingCart', JSON.stringify(item));
-    this.shoppingCart.next(this.getCart());
+    this.shoppingCart.next(this._getCart);
   }
 
-  loadCart() {
-    if (localStorage.getItem('shoppingCart')) {
-      this.shoppingCart.next(JSON.parse(localStorage.getItem('shoppingCart')?? '[]'));
-    }
+  private _loadCart() {
+    this.shoppingCart.next(
+      JSON.parse(localStorage.getItem('shoppingCart') ?? '[]')
+    );
+  }
+
+  private get _getCart() {
+    return JSON.parse(localStorage.getItem('shoppingCart') ?? '[]');
   }
 }

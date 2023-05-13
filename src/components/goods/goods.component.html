@@ -1,72 +1,66 @@
-<br>
 <div class="main-content">
   <div class="d-flex justify-content-center">
-    <div class="grid-container shadow-settings">
-      <div class="item1 border-hr-line position-relative" [ngStyle]="{ width: '350px', padding: '20px' }">
-        <p>
-          <strong>
-            Фільтри товарів
-          </strong>
-        </p>
-        <hr>
-        <mat-expansion-panel class="my-2">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Пошук
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <mat-form-field appearance="outline" class="w-100">
-            <input matInput placeholder="Search">
-            <button mat-icon-button matSuffix>
-              <mat-icon>
-                search
-              </mat-icon>
+    <div class="grid-container shadow-settings" style="border-radius: 15px;">
+      <div        
+        class="item1 border-hr-line position-relative" 
+        [ngStyle]="{ width: '350px', padding: '20px' }" 
+        style="border-radius: 15px;"
+      >
+        <div *ngIf="pageType == PageType.AllGoodsComponent"> 
+          <strong> Фільтри товарів </strong>
+          <hr>
+          <mat-expansion-panel class="my-2">
+            <mat-expansion-panel-header>
+              <mat-panel-title> Пошук </mat-panel-title>
+            </mat-expansion-panel-header>
+          
+            <mat-form-field appearance="outline" class="w-100">
+              <input matInput placeholder="Search" type="text" [(ngModel)]="textFilter">
+              <button mat-icon-button matSuffix (click)="itemFilter()">
+                <mat-icon> search </mat-icon>
+              </button>
+            </mat-form-field>
+          </mat-expansion-panel>
+          
+          <mat-expansion-panel class="my-2">
+            <mat-expansion-panel-header>
+              <mat-panel-title> Фільтр за ціною товару </mat-panel-title>
+            </mat-expansion-panel-header>
+          
+            <div class="d-flex flex-row justify-content-between align-items-baseline">
+              <mat-form-field appearance="outline">
+                <input matInput placeholder="Від" type="number" [(ngModel)]="priceFilter.from" (input)="itemFilter()">
+              </mat-form-field>
+          
+              <mat-form-field appearance="outline">
+                <input matInput placeholder="До" type="number" [(ngModel)]="priceFilter.to" (input)="itemFilter()">
+              </mat-form-field>
+            </div>
+          </mat-expansion-panel>
+        </div>
+        
+        <div *ngIf="pageType == PageType.MyGoodsComponent">
+          <div class="item1 border-hr-line position-relative" [ngStyle]="{ width: '350px', padding: '20px' }"
+            style="border-radius: 15px;">
+            <strong> Меню керування </strong>
+          
+            <hr>
+          
+            <button mat-flat-button class="w-100 btn-create" (click)="onCreateItem()">
+              Додати новий товар
             </button>
-          </mat-form-field>
-        </mat-expansion-panel>
-        <mat-expansion-panel class="my-2">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Фильтры
-            </mat-panel-title>
-            <mat-panel-description>
-              Выберите фильтры
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <section>
-            <mat-checkbox>1</mat-checkbox>
-            <mat-checkbox>2</mat-checkbox>
-            <mat-checkbox>3</mat-checkbox>
-            <mat-checkbox>4</mat-checkbox>
-          </section>
-        </mat-expansion-panel>
-        <mat-expansion-panel class="my-2">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              Фільтр за ціною товару
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="d-flex flex-row justify-content-between align-items-baseline">
-            <mat-form-field appearance="outline">
-              <input matInput placeholder="Від" type="number">
-
-            </mat-form-field>
-            <mat-form-field appearance="outline">
-              <input matInput placeholder="До" type="number">
-
-            </mat-form-field>
           </div>
-        </mat-expansion-panel>
-        <hr>
-        <button mat-raised-button class="w-100 filter-button">Применить фильтры</button>
+        </div>
       </div>
+
       <mat-paginator
         class="item2"
         [length]="items.length"
         [pageSize]="9"
         (page)="onPageChange($event)"
-      >
-      </mat-paginator>
+        style="border-radius: 15px;"
+      > </mat-paginator>
+
       <div class="item3 custom-grid justify-content-center">
         <div
           [@fadeInOut]
@@ -106,21 +100,17 @@
                   [matRippleCentered]="true"
                   [matRippleUnbounded]="true"
                   matTooltip="Відгуки"
-                >
-                  chat
-                </mat-icon>
+                > chat </mat-icon>
                 <span> {{ item.comments?.length ?? 0 }} </span>
               </div>
             </div>
           </div>
 
-          <span>
+          <div>
             <span class="fw-bold"> Ціна: </span>
-            {{ item.price | currency: 'UAH': 'symbol-narrow': '1.0-0' | slice: 1 }}
-            {{
-            ((item.price | currency: 'UAH': 'symbol-narrow': '1.0-0')?.charAt(0) || '')
-            }}
-          </span>
+            <span> {{ item.price | currency: 'UAH': 'symbol-narrow': '1.0-0' | slice: 1 }} </span>
+            <span> {{ ((item.price | currency: 'UAH': 'symbol-narrow': '1.0-0')?.charAt(0) || '') }} </span>
+          </div>
 
           <div class="d-flex justify-content-between shadow-menu-item">
             <button

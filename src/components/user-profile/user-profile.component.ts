@@ -14,17 +14,17 @@ import { Subscription } from 'rxjs';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { ProductItem } from '../../models/product-item';
 import {
-  CdkDragDrop, CdkDragEnd, CdkDragExit,
+  CdkDragDrop, CdkDragEnd,
   moveItemInArray,
   transferArrayItem
 } from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  selector: 'app-user-profile',
+  templateUrl: './user-profile.component.html',
+  styleUrls: ['./user-profile.component.css']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class UserProfileComponent implements OnInit, OnDestroy {
   title = 'AngularShop';
   isAuthorized: boolean = false;
   subscription: Subscription = new Subscription();

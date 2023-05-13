@@ -22,13 +22,16 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemInfoComponent } from '../../dialogs/item-info/item-info.component';
-import { ErrorDialogComponent } from '../../dialogs/error-dialog/error-dialog.component';
 import { PurchaseOfGoodsComponent } from '../../dialogs/purchase-of-goods/purchase-of-goods.component';
+import { FormsModule } from '@angular/forms';
+import { PageType } from 'src/enums/page.enum';
+import { ActivatedRoute } from '@angular/router';
+import { CreateItemDialogComponent } from 'src/dialogs/create-item/create-item-dialog.component';
 
 @Component({
-  selector: 'app-all-goods',
-  templateUrl: './all-goods.component.html',
-  styleUrls: ['./all-goods.component.css'],
+  selector: 'app-goods',
+  templateUrl: './goods.component.html',
+  styleUrls: ['./goods.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -41,18 +44,22 @@ import { PurchaseOfGoodsComponent } from '../../dialogs/purchase-of-goods/purcha
     MatExpansionModule,
     MatInputModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    FormsModule
   ],
   animations: [
     trigger('fadeInOut', [
-      state('void', style({
-        opacity: 0
-      })),
+      state(
+        'void',
+        style({
+          opacity: 0,
+        })
+      ),
       transition('void <=> *', animate(300)),
     ]),
-  ]
+  ],
 })
-export class AllGoodsComponent implements OnInit, OnDestroy {
+export class GoodsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   accountId: any = 0;
   items: ProductItem[] = [];
@@ -62,26 +69,37 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
   stars = [1, 2, 3, 4, 5];
   subscription: Subscription = new Subscription();
   currentRating: number[] = [];
+  textFilter = '';
+  priceFilter = { from: 0, to: 0 };
+  pageType!: PageType;
+  PageType = PageType;
 
   constructor(
     private store: Store<State>,
     private createItemService: CreateItemService,
     private authenticationService: AuthenticationService,
     private shoppingCartService: ShoppingCartService,
-    private dialogRef: MatDialog
-  ) { }
+    private dialogRef: MatDialog,
+    private route: ActivatedRoute,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.items = this.createItemService.getItems();
     this.pagedItems = this.items.slice(0, 9);
-    this.subscription.add(this.authenticationService.account.subscribe((id: any) => {
-      if (id) {
-        this.accountId = id;
-      } else {
-        this.accountId = 0;
-      }
-    }));
+    this.subscription.add(
+      this.authenticationService.account.subscribe((id: any) => {
+        if (id) {
+          this.accountId = id;
+        } else {
+          this.accountId = 0;
+        }
+      })
+    );
     this.accountId = this.authenticationService.getAccountId();
+
+    this.pageType = this.route.snapshot.data['pageType'] as PageType;
+
 
     this._fillCurrentRating();
   }
@@ -94,7 +112,7 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
 
   private _fillCurrentRating() {
     this.currentRating = [];
-    this.items.map(item => this.currentRating.push(item.rating?.number?? 0))
+    this.items.map((item) => this.currentRating.push(item.rating?.number ?? 0));
   }
 
   onChangeRating(dig: number, index: number) {
@@ -105,10 +123,8 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
     this.onPageChange({
       pageIndex: this.paginator.pageIndex,
       pageSize: this.paginator.pageSize,
-      length: this.items.length
+      length: this.items.length,
     });
-    console.log('@@ array1 ', this.items)
-    console.log('@@ array2 ', this.paginator)
   }
 
   onPageChange(event: PageEvent) {
@@ -118,10 +134,51 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
 
   onOpenItem(item: ProductItem, index?: number) {
     if (index) {
-      this.dialogRef.open(ItemInfoComponent, { data: { product: item, selectedTabIndex: index }, width: 'fit-content' });
+      this.dialogRef.open(ItemInfoComponent, {
+        data: { product: item, selectedTabIndex: index },
+        width: 'fit-content',
+      });
     } else {
-      this.dialogRef.open(ItemInfoComponent, { data: { product: item }, width: 'fit-content' });
+      this.dialogRef.open(ItemInfoComponent, {
+        data: { product: item },
+        width: 'fit-content',
+      });
     }
+  }
+
+  itemFilter() {
+    this.items = this.createItemService.getItems();
+    if (this.textFilter) {
+      console.log('@@ if');
+      this.items = this.items.filter(
+        (item) =>
+          item.productName
+            .toLowerCase()
+            .includes(this.textFilter.toLowerCase()) ||
+          item.description.toLowerCase().includes(this.textFilter.toLowerCase())
+      );
+    }
+
+    if (this.priceFilter.from && !this.priceFilter.to) {
+      console.log('@@ this.priceFilter.from && !this.priceFilter.to');
+      this.items = this.items.filter(
+        (item) => item.price >= this.priceFilter.from
+      );
+    } else if (!this.priceFilter.from && this.priceFilter.to) {
+      console.log('@@ !this.priceFilter.from && this.priceFilter.to');
+      this.items = this.items.filter(
+        (item) => item.price <= this.priceFilter.to
+      );
+    } else if (this.priceFilter.from && this.priceFilter.to) {
+      console.log('@@ this.priceFilter.from && this.priceFilter.to');
+      this.items = this.items.filter(
+        (item) =>
+          item.price >= this.priceFilter.from &&
+          item.price <= this.priceFilter.to
+      );
+    }
+
+    this.pagedItems = this.items.slice(0, 9);
   }
 
   getRating(item: ProductItem): number {
@@ -140,8 +197,12 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
   }
 
   getQualityId(product: ProductItem): boolean {
-    const shoppingCard: ProductItem[] = JSON.parse(localStorage.getItem('shoppingCart')?? '[]');
-    const isAlreadyExist = shoppingCard.find(item => item.productId == product.productId);
+    const shoppingCard: ProductItem[] = JSON.parse(
+      localStorage.getItem('shoppingCart') ?? '[]'
+    );
+    const isAlreadyExist = shoppingCard.find(
+      (item) => item.productId == product.productId
+    );
     return product.author?.id == this.accountId || !!isAlreadyExist;
   }
 
@@ -155,5 +216,11 @@ export class AllGoodsComponent implements OnInit, OnDestroy {
 
   onMouseOver(index: number) {
     this._fillCurrentRating();
+  }
+
+  onCreateItem() {
+    this.dialog.open(CreateItemDialogComponent, {
+      width: 'fit-content'
+    });
   }
 }

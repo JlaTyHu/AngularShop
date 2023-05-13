@@ -15,6 +15,7 @@ export class ProductItem {
     id?: number | string;
   };
   comments?: IProductComments[];
+  properties!: { name: string, type: string, isEditMode: boolean }[]
 
   constructor() {
   }

@@ -9,6 +9,10 @@ import { MatDialogModule } from "@angular/material/dialog";
 
 import { CreateItemDialogComponent } from "./create-item-dialog.component";
 import { FormsModule } from '@angular/forms';
+import { MatStepperModule } from '@angular/material/stepper';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [CreateItemDialogComponent],
@@ -19,7 +23,11 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatInputModule,
     MatDialogModule,
-    FormsModule
+    FormsModule,
+    MatStepperModule,
+    DragDropModule,
+    MatMenuModule,
+    MatProgressBarModule
   ],
   exports: [CreateItemDialogComponent]
 })

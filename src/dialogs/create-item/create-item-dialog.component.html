@@ -1,69 +1,155 @@
-<div class="d-flex flex-row justify-content-between align-items-start">
-  <h1> Створення нового товару </h1>
-  <button mat-button mat-dialog-close class="d-flex justify-content-center">
+<div
+  mat-dialog-title
+  class="d-flex flex-row justify-content-between align-items-start p-0 pt-2 header-gradient"
+  style="min-width: 500px"
+  cdkDrag
+  cdkDragRootElement=".cdk-overlay-pane"
+  cdkDragHandle
+>
+  <h2 class="px-3 my-0"> Створення нового товару </h2>
+  <button mat-dialog-close class="d-flex justify-content-center close-btn">
     <mat-icon>close</mat-icon>
   </button>
 </div>
 
-<mat-form-field appearance="outline">
-  <mat-label> Назва товару </mat-label>
-  <input
-    matInput
-    required
-    #nameInput
-    placeholder="Товар..."
-    [(ngModel)]="productItem.productName"
-    [maxLength]="30"
-  >
-  <mat-hint align="end"> {{ nameInput.value.length + '/' + 30 }} </mat-hint>
-</mat-form-field>
+<div mat-dialog-content class="mat-dialog-p" [@dialogExpand]="dialogProperty">
+  <mat-stepper>
+    <mat-step [editable]="true">
+      <ng-template matStepLabel> Форма товару </ng-template>
+      <br>
+      <div>
+        <mat-form-field appearance="outline" class="pt-3">
+          <mat-label> Назва товару </mat-label>
+          <input
+            matInput
+            required
+            #nameInput
+            placeholder="Товар..."
+            [(ngModel)]="productItem.productName"
+            [maxLength]="30"
+          >
+          <mat-hint align="end"> {{ nameInput.value.length + '/' + 30 }} </mat-hint>
+        </mat-form-field>
 
-<mat-form-field appearance="outline">
-  <mat-label> Опис </mat-label>
-  <input
-    matInput
-    required
-    #descriptionInput
-    placeholder="Опис..."
-    [(ngModel)]="productItem.description"
-    [maxLength]="100"
-  >
-  <mat-hint align="end"> {{ descriptionInput.value.length + '/' + 100 }} </mat-hint>
-</mat-form-field>
+        <mat-form-field appearance="outline" class="pt-3">
+          <mat-label> Опис </mat-label>
+          <textarea
+            matInput
+            required
+            #descriptionInput
+            placeholder="Опис..."
+            [(ngModel)]="productItem.description"
+            [maxLength]="100"
+          ></textarea>
+          <mat-hint align="end"> {{ descriptionInput.value.length + '/' + 100 }} </mat-hint>
+        </mat-form-field>
 
-<mat-form-field appearance="outline">
-  <mat-label> Силка на картинку </mat-label>
-  <input matInput required placeholder="Силка..." [(ngModel)]="imageUrl" (ngModelChange)="onImageUrlChange($event)">
-</mat-form-field>
-<img
-  *ngIf="!!productItem.imgSrc"
-  [@fadeIn]="imageLoaded"
-  (load)="onImageLoad()"
-  class="img-animation"
-  [src]="productItem.imgSrc"
-  (error)="onErrorImg()"
-  [ngStyle]="{ width: '100%', height: '200px' }
-">
+        <mat-form-field appearance="outline" class="pt-3">
+          <mat-label> Силка на картинку </mat-label>
+          <input matInput required placeholder="Силка..." [(ngModel)]="imageUrl" (ngModelChange)="onImageUrlChange($event)">
+        </mat-form-field>
+        <img
+          *ngIf="!!productItem.imgSrc"
+          [@fadeIn]="imageLoaded"
+          (load)="onImageLoad()"
+          class="img-animation"
+          [src]="productItem.imgSrc"
+          (error)="onErrorImg()"
+          [ngStyle]="{ width: '100%', height: '200px' }
+        ">
 
-<mat-form-field appearance="outline">
-  <mat-label> Ціна товару </mat-label>
-  <input
-    matInput
-    required
-    type="number"
-    placeholder="Ціна..."
-    #priceInput
-    [(ngModel)]="productItem.price"
-    (input)="priceInput.value = priceInput.value.slice(0, 6)"
-  >
-  <mat-hint align="end"> {{ priceInput.value.length + '/' + 6 }} </mat-hint>
-</mat-form-field>
+        <mat-form-field appearance="outline" class="pt-3">
+          <mat-label> Ціна товару </mat-label>
+          <input
+            matInput
+            required
+            type="number"
+            placeholder="Ціна..."
+            #priceInput
+            [(ngModel)]="productItem.price"
+            (input)="priceInput.value = priceInput.value.slice(0, 6)"
+          >
+          <mat-hint align="end"> {{ priceInput.value.length + '/' + 6 }} </mat-hint>
+        </mat-form-field>
+      </div>
+    </mat-step>
 
-<div class="d-flex justify-content-between align-items-center">
+    <mat-step [editable]="true" class="p-0" errorMessage="Додайте характеристики!">
+      <ng-template matStepLabel> Характеристики товару </ng-template>
+      <br>
+
+      <div class="d-flex flex-column">
+        <div class="create-property-menu mb-1 d-flex justify-content-center align-items-center">
+          <h3 class="m-0 p-0 fw-700"> Створити характеристику до товару </h3>
+          <button class="create-property-btn ms-2" (click)="onAddPropertyField()" [disabled]="properties.length >= 10"> Додати </button>
+        </div>
+        <span
+          class="d-flex justify-content-center align-items-center mb-2"
+          style="font-weight: 600; font-size: 14px"
+        > {{ properties.length }} з 10 </span>
+
+        <div class="example-list" cdkDropList [cdkDropListData]="properties" (cdkDropListDropped)="drop($event)">
+          <div
+            *ngFor="let property of properties; let i = index"
+            class="d-flex flex-row justify-content-between property-item bg-white-o-1 example-box align-items-center"
+            cdkDrag
+            [@drawAnimation]
+          >
+            <div *cdkDragPlaceholder class="example-custom-placeholder"></div>
+
+            <div *ngIf="properties.length">
+              <div class="d-flex flex-row justify-content-between">
+                <mat-form-field appearance="outline">
+                  <mat-label> Назва </mat-label>
+                  <input matInput type="text" [(ngModel)]="property.name" required [disabled]="!property.isEditMode">
+                </mat-form-field>
+
+                <div class="d-flex flex-row justify-content-end">
+                  <mat-form-field appearance="outline" style="width: 30%">
+                    <mat-label> Тип </mat-label>
+                    <input matInput type="text" [(ngModel)]="property.type" required [disabled]="!property.isEditMode">
+                  </mat-form-field>
+                  <button mat-icon-button [matMenuTriggerFor]="manageMenu" aria-label="Example icon-button with a menu">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <mat-progress-bar class="mt-2" color="{{ progressBarColor(i) }}" mode="determinate" value="{{ progressBarValue(i) }}"></mat-progress-bar>
+              <mat-menu #manageMenu="matMenu">
+                <button *ngIf="property.isEditMode" mat-menu-item [disabled]="!isPropertyFiledNotEmpty(i)" (click)="property.isEditMode = false">
+                  <mat-icon> task_alt </mat-icon>
+                  <span> Зберегти </span>
+                </button>
+
+                <button *ngIf="!property.isEditMode" mat-menu-item (click)="property.isEditMode = true">
+                  <mat-icon> edit </mat-icon>
+                  <span> Редагувати </span>
+                </button>
+
+                <button mat-menu-item (click)="onDeleteProperty(i)">
+                  <mat-icon> delete </mat-icon>
+                  <span> Видалити </span>
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+
+          <div *ngIf="!properties.length" class="d-flex justify-content-center align-items-center">
+            <h3>
+              Додайте характеристик до товару!
+            </h3>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+  </mat-stepper>
+</div>
+
+<div mat-dialog-actions class="d-flex justify-content-between align-items-center" style="padding: 20px; background: #0000000a;">
   <button
     mat-raised-button
     mat-dialog-close
-    [disabled]="disableButton()"
+    [disabled]="disableButton"
     (click)="onCreateItem()"
   >
     Створити
@@ -76,4 +162,3 @@
     Повернутися
   </button>
 </div>
-
