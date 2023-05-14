@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
@@ -15,7 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
-import { CreateItemService } from '../../services/create-item.service';
+import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { Subscription } from 'rxjs';
 import { AuthenticationService } from '../../services/authentication.service';
@@ -25,8 +25,13 @@ import { ItemInfoComponent } from '../../dialogs/item-info/item-info.component';
 import { PurchaseOfGoodsComponent } from '../../dialogs/purchase-of-goods/purchase-of-goods.component';
 import { FormsModule } from '@angular/forms';
 import { PageType } from 'src/enums/page.enum';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CreateItemDialogComponent } from 'src/dialogs/create-item/create-item-dialog.component';
+import { ConfirmActionComponent } from 'src/dialogs/confirm-action/confirm-action.component';
+import { SnackbarService } from 'src/services/snackbar.service';
+import { ItemMessages } from 'src/enums/item-messages.enum';
+import { IUser } from 'src/interfaces/user';
+import { imgNotFound } from 'src/consts/img-not-found.const';
 
 @Component({
   selector: 'app-goods',
@@ -58,6 +63,7 @@ import { CreateItemDialogComponent } from 'src/dialogs/create-item/create-item-d
       transition('void <=> *', animate(300)),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GoodsComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -76,17 +82,19 @@ export class GoodsComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<State>,
-    private createItemService: CreateItemService,
+    private itemManagerService: ItemManagerService,
     private authenticationService: AuthenticationService,
     private shoppingCartService: ShoppingCartService,
     private dialogRef: MatDialog,
     private route: ActivatedRoute,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackbarService: SnackbarService,
+    private router: Router,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.items = this.createItemService.getItems();
-    this.pagedItems = this.items.slice(0, 9);
+    this._getItemsForPageType();
     this.subscription.add(
       this.authenticationService.account.subscribe((id: any) => {
         if (id) {
@@ -98,10 +106,28 @@ export class GoodsComponent implements OnInit, OnDestroy {
     );
     this.accountId = this.authenticationService.getAccountId();
 
-    this.pageType = this.route.snapshot.data['pageType'] as PageType;
-
+    console.log('@@ pageType ', this.pageType);
 
     this._fillCurrentRating();
+  }
+
+  private _getItemsForPageType() {
+    console.log('@@ get here ')
+    this.pageType = this.route.snapshot.data['pageType'] as PageType;
+    if (this.pageType === PageType.AllGoodsComponent) {
+      this.items = this.itemManagerService.getAllItems();
+    } else if (this.pageType === PageType.MyGoodsComponent) {
+      this.items = this.itemManagerService.getUserItems();
+      console.log('@@ get items here ', this.items);
+      this.itemManagerService.items.subscribe(
+        () => {
+          this.items = this.itemManagerService.getUserItems();
+          this.pagedItems = this.items.slice(0, 9);
+          this.changeDetectorRef.detectChanges();
+        }
+      );
+    }
+    this.pagedItems = this.items.slice(0, 9);
   }
 
   ngOnDestroy() {
@@ -113,6 +139,23 @@ export class GoodsComponent implements OnInit, OnDestroy {
   private _fillCurrentRating() {
     this.currentRating = [];
     this.items.map((item) => this.currentRating.push(item.rating?.number ?? 0));
+  }
+
+  onEditUserItem(item: ProductItem) {
+
+  }
+
+  onDeleteUserItem(item: ProductItem) { 
+    const ref = this.dialog.open(ConfirmActionComponent);
+    ref.componentInstance.confirmText = `Ви впевнені що хочете видалити назавжди товар <strong>"${item.productName}"</strong>?`;
+    ref.afterClosed().subscribe(
+      (action) => {
+        if (action) {
+          this.itemManagerService.removeItem(item.productId).then(() => this.snackbarService.showMessage(ItemMessages.DeleteItemSuccess));
+          this._getItemsForPageType();
+        }
+      }
+    );
   }
 
   onChangeRating(dig: number, index: number) {
@@ -147,7 +190,12 @@ export class GoodsComponent implements OnInit, OnDestroy {
   }
 
   itemFilter() {
-    this.items = this.createItemService.getItems();
+    if (this.pageType === PageType.AllGoodsComponent) {
+      this.items = this.itemManagerService.getAllItems();
+    } else if (this.pageType === PageType.MyGoodsComponent) {
+      this.items = this.itemManagerService.getUserItems();
+    }
+
     if (this.textFilter) {
       console.log('@@ if');
       this.items = this.items.filter(
@@ -197,16 +245,16 @@ export class GoodsComponent implements OnInit, OnDestroy {
   }
 
   getQualityId(product: ProductItem): boolean {
-    const shoppingCard: ProductItem[] = JSON.parse(
-      localStorage.getItem('shoppingCart') ?? '[]'
-    );
-    const isAlreadyExist = shoppingCard.find(
-      (item) => item.productId == product.productId
-    );
+    const users: IUser[] = JSON.parse(localStorage.getItem('users') ?? '[]');
+    const accountId = JSON.parse(localStorage.getItem('accountId') ?? '0');
+    const user = users.find(user => user.id == accountId);
+    
+    const isAlreadyExist = user?.shoppingCart.find((item) => item.productId == product.productId);
     return product.author?.id == this.accountId || !!isAlreadyExist;
   }
 
-  onAddToShoppingCard(item: ProductItem) {
+  onAddToShoppingCard(event: Event, item: ProductItem) {
+    event.stopPropagation();
     this.shoppingCartService.addToCart(item);
   }
 
@@ -222,5 +270,19 @@ export class GoodsComponent implements OnInit, OnDestroy {
     this.dialog.open(CreateItemDialogComponent, {
       width: 'fit-content'
     });
+  }
+
+  itemMatTooltip(product: ProductItem): string {
+    if (this.onUserAuth && !this.getQualityId(product)) {
+      return 'У кошик';
+    } else if (this.getQualityId(product)) {
+      return 'Вже в кошику'
+    } else {
+      return 'Авторизуйтесь, щоб додати до кошика';
+    }
+  }
+
+  onErrorImg(index: number) {
+    this.items[index].imgSrc = imgNotFound;
   }
 }

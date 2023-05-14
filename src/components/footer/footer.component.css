@@ -1,12 +1,39 @@
 .footer-bg-color {
-  background: #333333;
+  background: transparent;
   height: 200px;
-  opacity: 0.1;
+  color: #ffffff78;
 }
 
-.divider {
-  border-top-width: 2px;
-  border-top-color: #333333;
-  opacity: 1;
-  box-shadow: 5px 0px 10px black;
+.footer-text {
+  width: 50%;
+  font-size: 12px;
+  text-align: center;
+}
+
+.mat-footer-icon {
+  width: 150px;
+  height: 50px;
+  fill: #ffffff82;
+}
+
+svg {
+  width: 50px;
+  height: 50px;
+  fill: #ffffff82;
+  margin: 0 10px;
+  transition: 0.3s all ease-in-out;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+}
+
+svg:hover {
+  fill: white;
+}
+
+.footer-divider {
+  color: white;
+  margin: 0 auto;
+  width: 90%;
+  height: 2px;
+  border: none;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgb(255 255 255), rgba(0, 0, 0, 0));
 }

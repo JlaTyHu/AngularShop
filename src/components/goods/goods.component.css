@@ -165,3 +165,7 @@ mat-icon.star {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+img {
+  object-fit: contain;
+}

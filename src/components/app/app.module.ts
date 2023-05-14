@@ -24,6 +24,7 @@ import { CreateItemDialogModule } from '../../dialogs/create-item/create-item-di
 import { PurchaseOfGoodsModule } from '../../dialogs/purchase-of-goods/purchase-of-goods.module';
 import { HeaderModule } from '../header/header.module';
 import { UserProfileModule } from '../user-profile/user-profile.module';
+import { ConfirmActionModule } from 'src/dialogs/confirm-action/confirm-action.module';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { UserProfileModule } from '../user-profile/user-profile.module';
     ErrorDialogModule,
     CreateItemDialogModule,
     PurchaseOfGoodsModule,
+    ConfirmActionModule,
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 999

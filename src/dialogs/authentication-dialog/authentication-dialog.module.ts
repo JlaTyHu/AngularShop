@@ -12,6 +12,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatDialogModule } from "@angular/material/dialog";
 
 import { AuthenticationDialogComponent } from "./authentication-dialog.component";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [AuthenticationDialogComponent],
@@ -26,7 +27,8 @@ import { AuthenticationDialogComponent } from "./authentication-dialog.component
     MatInputModule,
     FormsModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DragDropModule
   ],
   exports: [AuthenticationDialogComponent]
 })

@@ -14,7 +14,7 @@ import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateItemDialogComponent } from '../create-item/create-item-dialog.component';
-import { CreateItemService } from '../../services/create-item.service';
+import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { AuthenticationService } from '../../services/authentication.service';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -78,7 +78,7 @@ export class ItemInfoComponent implements OnInit {
     private store: Store<State>,
     private dialog: MatDialog,
     private authenticationService: AuthenticationService,
-    private createItemService: CreateItemService,
+    private createItemService: ItemManagerService,
     @Inject(MAT_DIALOG_DATA)
     private data: { product: ProductItem; selectedTabIndex: number }
   ) {}

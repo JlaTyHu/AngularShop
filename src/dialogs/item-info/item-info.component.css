@@ -76,6 +76,10 @@
   background-image: linear-gradient(45deg, #ebd1ff, #ffcfcf);
 } */
 
+img {
+  object-fit: contain;
+}
+
 ::ng-deep .mat-mdc-tab-header {
   width: fit-content;
   z-index: 11;

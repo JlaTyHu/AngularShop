@@ -11,6 +11,7 @@ import {
   RegistrationRequest
 } from '../../store/actions/authentication.actions';
 import { State } from '../../store/app-state';
+import { IUser } from 'src/interfaces/user';
 
 @Component({
   selector: 'app-authentication',
@@ -97,18 +98,18 @@ export class AuthenticationDialogComponent implements OnInit {
   }
 
   onRegisterUser() {
-    const login = this.authenticationForm.get('login')?.value;
-    const email = this.authenticationForm.get('email')?.value;
-    const password = this.authenticationForm.get('password')?.value;
+    const login: string = this.authenticationForm.get('login')?.value;
+    const email: string = this.authenticationForm.get('email')?.value;
+    const password: string = this.authenticationForm.get('password')?.value;
 
-    this.store.dispatch(new RegistrationRequest({ login, email, password }));
+    this.store.dispatch(new RegistrationRequest(({ login, email, password }) as IUser));
   }
 
   onAuthorizeUser() {
-    const login = this.authenticationForm.get('login')?.value;
-    const email = this.authenticationForm.get('email')?.value;
-    const password = this.authenticationForm.get('password')?.value;
+    const login: string = this.authenticationForm.get('login')?.value;
+    const email: string = this.authenticationForm.get('email')?.value;
+    const password: string = this.authenticationForm.get('password')?.value;
 
-    this.store.dispatch(new AuthorizationRequest({ login, email, password }));
+    this.store.dispatch(new AuthorizationRequest(({ login, email, password }) as IUser));
   }
 }

@@ -1,79 +1,59 @@
 <form [formGroup]="authenticationForm">
-  <h1>
-    {{ formProperties.title }}
-  </h1>
-  <mat-form-field
-    class="single-field"
-    appearance="outline"
+  <div 
+    mat-dialog-title 
+    class="d-flex justify-content-between align-items-center flex-row header-gradient"
+    style="padding: 0 0 10px 0" 
+    cdkDrag 
+    cdkDragRootElement=".cdk-overlay-pane" 
+    cdkDragHandle
   >
-    <mat-label>
-      Логін
-    </mat-label>
-    <input
-      formControlName="login"
-      [maxLength]="maxInputLength"
-      matInput
-      placeholder="..."
-    >
-    <mat-hint align="end">
-      {{ authenticationForm.get('login')?.value?.length + ' / ' + maxInputLength }}
-    </mat-hint>
-  </mat-form-field>
-  <mat-form-field
-    class="single-field"
-    appearance="outline"
-  >
-    <mat-label>
-      Електронна адреса
-    </mat-label>
-    <input
-      formControlName="email"
-      [maxLength]="maxInputLength"
-      matInput
-      placeholder="your@example.com..."
-    >
-    <mat-hint align="end">
-      {{ authenticationForm.get('email')?.value?.length + ' / ' + maxInputLength }}
-    </mat-hint>
-  </mat-form-field>
-  <mat-form-field
-    class="single-field"
-    appearance="outline"
-  >
-    <mat-label>
-      Пароль
-    </mat-label>
-    <input
-      formControlName="password"
-      [maxLength]="maxInputLength"
-      matInput
-      type="password"
-      placeholder="Ваш пароль..."
-    >
-    <mat-hint align="end">
-      {{ authenticationForm.get('password')?.value?.length + ' / ' + maxInputLength }}
-    </mat-hint>
-  </mat-form-field>
-  <mat-form-field
-    *ngIf="formProperties.formType === 0"
-    class="single-field"
-    appearance="outline"
-  >
-    <mat-label>
-      Повторіть пароль
-    </mat-label>
-    <input
-      formControlName="repeatPassword"
-      [maxLength]="maxInputLength"
-      matInput
-      type="password"
-      placeholder="Повторіть пароль..."
-    >
-    <mat-hint align="end">
-      {{ authenticationForm.get('repeatPassword')?.value?.length + ' / ' + maxInputLength }}
-    </mat-hint>
-  </mat-form-field>
-  <div class="both-btn">
+    <h2 class="mb-0 mt-1 font-weight-700"> {{ formProperties.title }} </h2>
+    <button mat-dialog-close class="close-btn">
+      <mat-icon> close </mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content>
+    <mat-form-field class="single-field" appearance="outline">
+      <mat-label>
+        Логін
+      </mat-label>
+      <input formControlName="login" [maxLength]="maxInputLength" matInput placeholder="...">
+      <mat-hint align="end">
+        {{ authenticationForm.get('login')?.value?.length + ' / ' + maxInputLength }}
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field class="single-field" appearance="outline">
+      <mat-label>
+        Електронна адреса
+      </mat-label>
+      <input formControlName="email" [maxLength]="maxInputLength" matInput placeholder="your@example.com...">
+      <mat-hint align="end">
+        {{ authenticationForm.get('email')?.value?.length + ' / ' + maxInputLength }}
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field class="single-field" appearance="outline">
+      <mat-label>
+        Пароль
+      </mat-label>
+      <input formControlName="password" [maxLength]="maxInputLength" matInput type="password" placeholder="Ваш пароль...">
+      <mat-hint align="end">
+        {{ authenticationForm.get('password')?.value?.length + ' / ' + maxInputLength }}
+      </mat-hint>
+    </mat-form-field>
+    <mat-form-field *ngIf="formProperties.formType === 0" class="single-field" appearance="outline">
+      <mat-label>
+        Повторіть пароль
+      </mat-label>
+      <input formControlName="repeatPassword" [maxLength]="maxInputLength" matInput type="password"
+        placeholder="Повторіть пароль...">
+      <mat-hint align="end">
+        {{ authenticationForm.get('repeatPassword')?.value?.length + ' / ' + maxInputLength }}
+      </mat-hint>
+    </mat-form-field>
+  </div>
+
+  <div class="both-btn" mat-dialog-actions>
     <button
       [disabled]="!authenticationForm.valid"
       mat-raised-button
@@ -82,6 +62,7 @@
       class="form-btn"
       type="submit"
       (click)="formProperties.formType === 0 ? onRegisterUser() : onAuthorizeUser()"
+      style="border-radius: 10px"
     >
       {{ formProperties.formType === 0 ? 'Зареєструватися' : 'Авторизуватися' }}
     </button>
@@ -90,6 +71,7 @@
       mat-dialog-close
       color="warn"
       class="form-btn"
+      style="border-radius: 10px"
     >
       Повернутись
     </button>

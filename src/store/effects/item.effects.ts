@@ -8,7 +8,7 @@ import { State } from '../app-state';
 import { ErrorOccurredService } from '../../services/error-occurred.service';
 import { AppRootErrorOccurred } from '../actions/app-root.actions';
 import { AppRootTypes } from '../types/app-root.types';
-import { CreateItemService } from '../../services/create-item.service';
+import { ItemManagerService } from '../../services/item-manager.service';
 import { CreateItemSuccess, DeleteItemSuccess, EditItemSuccess } from '../actions/item.actions';
 
 @Injectable()
@@ -65,7 +65,7 @@ export class ItemEffects {
   constructor(
     private actions$: Actions,
     private store: Store<State>,
-    private createItemService: CreateItemService,
+    private createItemService: ItemManagerService,
     private errorOccurredService: ErrorOccurredService
   ) {
   }

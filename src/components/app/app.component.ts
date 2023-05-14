@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {Store} from "@ngrx/store";
-import {State} from "../../store/app-state";
+import { Store } from "@ngrx/store";
+import { State } from "../../store/app-state";
 
 @Component({
   selector: 'app-root',
@@ -12,6 +12,5 @@ export class AppComponent {
 
   loading$ = this.store.select((state) => state.authentication.loading);
 
-  constructor(private store: Store<State>) {
-  }
+  constructor(private store: Store<State>) { }
 }

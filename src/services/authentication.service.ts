@@ -16,7 +16,13 @@ export class AuthenticationService {
     );
     const newId = maxId + 1;
 
-    const newUser: IUser = { id: newId, login, email, password };
+    const newUser: IUser = {
+      id: newId,
+      login,
+      email,
+      password,
+      shoppingCart: []
+    };
 
     users.push(newUser);
 
@@ -52,6 +58,7 @@ export class AuthenticationService {
   logout(): Promise<boolean> {
     this.setAuthStatus(false);
     this.setAccountId(0);
+    this.isAuthenticated.next(false);
     return Promise.resolve(true);
   }
 
@@ -66,12 +73,12 @@ export class AuthenticationService {
   }
 
   setAccountId(id: number) {
-    localStorage.setItem('account', id.toString());
-    this.account.next(localStorage.getItem('account'));
+    localStorage.setItem('accountId', id.toString());
+    this.account.next(localStorage.getItem('accountId'));
   }
 
   getAccountId() {
-    const authorId = JSON.parse(localStorage.getItem('account') ?? '');
+    const authorId = JSON.parse(localStorage.getItem('accountId') ?? '0');
     return authorId;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   MatDialog,
   MatDialogRef,
@@ -14,15 +14,15 @@ import { Subscription } from 'rxjs';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { ProductItem } from '../../models/product-item';
 import {
-  CdkDragDrop, CdkDragEnd, CdkDragExit,
+  CdkDragDrop,
   moveItemInArray,
-  transferArrayItem
 } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   title = 'AngularShop';
@@ -40,15 +40,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.subscription.add(this.authenticationService.isAuthenticated.subscribe(
-      (flag) => (this.isAuthorized = flag)
+    this.subscription.add(this.authenticationService.account.subscribe(
+      (id) => {
+        console.log('@@ flag ', id);
+        console.log('@@ flag ', !!id);
+        if (id == 0) {
+          id = false;
+        }
+        if (id) {
+          this.isAuthorized = true;
+          this.items = this.shoppingCartService.currentShoppingCart;
+          console.log('@@ items s ', this.shoppingCartService.currentShoppingCart)
+        } else {
+          this.isAuthorized = false;
+          this.items = [];
+        }
+      }
     ));
-    this.isAuthorized = this.authenticationService.getAuthStatus();
-    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
-      (items) => this.items = items
-    ));
-    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
-      (items) => (this.items = items)
+    // this.isAuthorized = this.authenticationService.getAuthStatus();
+    this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
+      (items) => {
+        this.items = items;
+        console.log('@@items shopping cart ', items)
+      }
     ));
   }
 
@@ -58,13 +72,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  dragEnd(event: CdkDragEnd, itemId: number) {
-    const { x, y } = event.distance;
-    if (Math.abs(x) > 100 || Math.abs(y) > 125) {
-      this.items.splice(this.items.indexOf(event.source.data), 1);
-      this.onDeleteForShoppingCard(itemId);
-    }
-  }
+  // dragEnd(event: CdkDragEnd, itemId: number) {
+  //   const { x, y } = event.distance;
+  //   if (Math.abs(x) > 100 || Math.abs(y) > 125) {
+  //     this.items.splice(this.items.indexOf(event.source.data), 1);
+  //     this.onDeleteForShoppingCard(itemId);
+  //   }
+  // }
 
   onNavigate(routName: string) {
     this.router.navigate([routName]);
@@ -81,26 +95,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
       case AuthenticationEnum.Registration:
         dialogRef = this.dialog.open(AuthenticationDialogComponent, {
           data: {
-            title: 'Registration',
+            title: 'Реєстрація',
             formType: AuthenticationEnum.Registration,
           },
-          width: '50%',
+          maxWidth: '500px',
         });
         break;
       case AuthenticationEnum.Authorization:
         dialogRef = this.dialog.open(AuthenticationDialogComponent, {
           data: {
-            title: 'Authorization',
+            title: 'Авторизація',
             formType: AuthenticationEnum.Authorization,
           },
-          width: '50%',
+          maxWidth: '500px',
         });
         break;
     }
   }
 
-  onDeleteForShoppingCard(itemId: number) {
-    this.shoppingCartService.removeFromCart(itemId);
+  onDeleteForShoppingCard(productId: number) {
+    this.shoppingCartService.removeFromCart(productId);
   }
 
   onLogout() {
@@ -114,19 +128,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<ProductItem[], any>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
-    }
+    moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   }
 
   navigateToUserProfile() {
-    this.router.navigate(['/user-profile', JSON.parse(localStorage.getItem('account')?? '0')]);
+    this.router.navigate(['/user-profile', JSON.parse(localStorage.getItem('accountId')?? '0')]);
+  }
+
+  get userAuthenticated(): boolean { 
+    console.log('@@ metod')
+    return this.authenticationService.getAuthStatus();
   }
 }

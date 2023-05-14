@@ -6,7 +6,7 @@
   cdkDragRootElement=".cdk-overlay-pane"
   cdkDragHandle
 >
-  <h2 class="px-3 my-0"> Створення нового товару </h2>
+  <h2 class="px-3 my-0"> {{ dialogTitle }} </h2>
   <button mat-dialog-close class="d-flex justify-content-center close-btn">
     <mat-icon>close</mat-icon>
   </button>
@@ -26,7 +26,6 @@
             #nameInput
             placeholder="Товар..."
             [(ngModel)]="productItem.productName"
-            [maxLength]="30"
           >
           <mat-hint align="end"> {{ nameInput.value.length + '/' + 30 }} </mat-hint>
         </mat-form-field>
@@ -39,7 +38,6 @@
             #descriptionInput
             placeholder="Опис..."
             [(ngModel)]="productItem.description"
-            [maxLength]="100"
           ></textarea>
           <mat-hint align="end"> {{ descriptionInput.value.length + '/' + 100 }} </mat-hint>
         </mat-form-field>
@@ -55,9 +53,9 @@
           class="img-animation"
           [src]="productItem.imgSrc"
           (error)="onErrorImg()"
-          [ngStyle]="{ width: '100%', height: '200px' }
-        ">
-
+          [style.width]="getWidth()" 
+          [style.height]="getHeight()"
+        >
         <mat-form-field appearance="outline" class="pt-3">
           <mat-label> Ціна товару </mat-label>
           <input
@@ -110,7 +108,7 @@
                     <input matInput type="text" [(ngModel)]="property.type" required [disabled]="!property.isEditMode">
                   </mat-form-field>
                   <button mat-icon-button [matMenuTriggerFor]="manageMenu" aria-label="Example icon-button with a menu">
-                    <mat-icon>more_vert</mat-icon>
+                    <mat-icon> more_vert </mat-icon>
                   </button>
                 </div>
               </div>
@@ -150,14 +148,16 @@
     mat-raised-button
     mat-dialog-close
     [disabled]="disableButton"
+    color="primary"
     (click)="onCreateItem()"
+    style="border-radius: 10px"
   >
     Створити
   </button>
   <button
     mat-raised-button
-    color="warn"
     mat-dialog-close
+    style="border-radius: 10px"
   >
     Повернутися
   </button>

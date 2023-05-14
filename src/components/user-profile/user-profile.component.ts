@@ -44,10 +44,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       (flag) => (this.isAuthorized = flag)
     ));
     this.isAuthorized = this.authenticationService.getAuthStatus();
-    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
+    this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
       (items) => this.items = items
     ));
-    this.subscription.add(this.shoppingCartService.shoppingCart.subscribe(
+    this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
       (items) => (this.items = items)
     ));
   }

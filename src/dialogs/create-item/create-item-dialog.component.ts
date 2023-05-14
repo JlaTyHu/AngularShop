@@ -4,11 +4,12 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
-import { CreateItemService } from '../../services/create-item.service';
+import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { imgNotFound } from '../../consts/img-not-found.const';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ItemManager } from 'src/enums/item-manage.enum';
 
 @Component({
   selector: 'app-create-item',
@@ -51,11 +52,15 @@ export class CreateItemDialogComponent implements OnInit {
   imageLoaded = false;
   properties: { name: string, type: string, isEditMode: boolean }[] = [];
   dialogProperty = 'expanded';
+  modalType!: ItemManager;
+
+  imageHeight!: string;
+  imageWidth!: string;
 
   constructor(
     private dialogRef: MatDialogRef<CreateItemDialogComponent>,
     private fb: FormBuilder,
-    private createItemService: CreateItemService,
+    private itemManagerService: ItemManagerService,
     private store: Store<State>,
     private _formBuilder: FormBuilder
   ) {
@@ -110,7 +115,7 @@ export class CreateItemDialogComponent implements OnInit {
   onCreateItem() {
     const fullModel = { ...this.productItem, properties: this.properties };
     console.log('@@ model ', fullModel)
-    this.createItemService.addItem(fullModel);
+    this.itemManagerService.addItem(fullModel);
   }
 
   get disableButton(): boolean {
@@ -128,5 +133,33 @@ export class CreateItemDialogComponent implements OnInit {
 
   get propertiesValid(): boolean {
     return this.properties.every(property => !property.isEditMode);
+  }
+
+  get dialogTitle(): string {
+    switch (this.modalType) {
+      case ItemManager.CreateItem: return 'Створення нового товару';
+      case ItemManager.EditItem: return 'Редагування товару';
+      default: return 'Товар';
+    }
+  }
+
+  getWidth() {
+    if (this.imageWidth > this.imageHeight) {
+      return '500px';
+    } else if (this.imageWidth < this.imageHeight) {
+      return '100px';
+    } else {
+      return '300px';
+    }
+  }
+
+  getHeight() {
+    if (this.imageWidth > this.imageHeight) {
+      return '100px';
+    } else if (this.imageWidth < this.imageHeight) {
+      return '500px';
+    } else {
+      return '300px';
+    }
   }
 }

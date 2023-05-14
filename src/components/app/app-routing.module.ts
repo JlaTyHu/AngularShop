@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
 import { PageType } from 'src/enums/page.enum';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -28,9 +29,15 @@ export const routes: Routes = [
   },
   {
     path: 'my-goods',
+    canActivate: [AuthGuard],
     loadComponent: () => import('../goods/goods.component')
       .then(module => module.GoodsComponent),
     data: { pageType: PageType.MyGoodsComponent }
+  },
+  {
+    path: '**',
+    redirectTo: '/home',
+    pathMatch: 'full'
   }
 ];
 

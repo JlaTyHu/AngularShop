@@ -5,7 +5,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Store } from '@ngrx/store';
 import { State } from '../../store/app-state';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { CreateItemService } from '../../services/create-item.service';
+import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { AuthenticationService } from '../../services/authentication.service';
 
@@ -27,7 +27,7 @@ export class PurchaseOfGoodsComponent implements OnInit {
   cardNumber = '';
   cardDate = '';
   cardCVV2!: number;
-  userInfo: { name: string, surname: string } = { name: '', surname: '' };
+  userInfo: { name: string, surname: string, address: string } = { name: '', surname: '', address: '' };
   isSubmitted = false;
   amount = 0;
 
@@ -35,7 +35,7 @@ export class PurchaseOfGoodsComponent implements OnInit {
     private store: Store<State>,
     private dialog: MatDialog,
     private authenticationService: AuthenticationService,
-    private createItemService: CreateItemService,
+    private createItemService: ItemManagerService,
     @Inject(MAT_DIALOG_DATA) private data: { product: ProductItem, selectedTabIndex: number }
   ) { }
 
@@ -52,6 +52,7 @@ export class PurchaseOfGoodsComponent implements OnInit {
       && !!this.cardCVV2
       && !!this.userInfo.name
       && !!this.userInfo.surname
+      && !!this.userInfo.address
       && !!this.amount
   }
 

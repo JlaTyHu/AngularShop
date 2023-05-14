@@ -1,6 +1,6 @@
 <div
-  class="d-flex justify-content-between position-relative"
-  style="width: fit-content; min-width: 500px; min-height: 500px; position: relative"
+  class="d-flex justify-content-between position-relative w-100"
+  style="min-width: 1000px; min-height: 500px; position: relative;"
   [@dialogExpand]="dialogProperty"
 >
   <mat-tab-group
@@ -11,37 +11,35 @@
   >
     <mat-tab label="Товар">
       <div class="d-flex justify-content-between mt-2 mat-tab-p">
-        <div class="me-4 d-flex flex-column">
+        <div class="me-4 d-flex flex-column justify-content-around">
           <img [src]="item.imgSrc" class="item-img">
 
           <div matTooltip="Рейтинг" class="d-flex justify-content-center my-3" style="color: gold">
             <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
-              <mat-icon [ngClass]="{ 'filled': i < (item.rating?.number || 0) }">
-                {{ i < (item.rating?.number || 0) ? 'star' : 'star_outline' }}
+              <mat-icon [ngClass]="{ 'filled': i < (item.rating.number || 0) }">
+                {{ i < (item.rating.number || 0) ? 'star' : 'star_outline' }}
               </mat-icon>
             </ng-container>
           </div>
 
           <div class="d-flex flex-row justify-content-around">
-            <p> Автор: {{ item.author?.login }} </p>
-            <p> Видгукив: {{ item.comments?.length }} </p>
+            <p> Автор: {{ item.author.login }} </p>
+            <p> Видгукив: {{ item.comments.length }} </p>
             <p> Товар придбало: 2 </p>
           </div>
-
+          
           <div class="d-flex justify-content-around">
-            <button class="action-btn"> Придбати цей товар </button>
-            <button class="action-btn"> Додати товар до кошика </button>
+            <button mat-raised-button style="border-radius: 10px" color="primary"> Придбати цей товар </button>
+            <button mat-raised-button style="border-radius: 10px" color="primary"> Додати товар до кошика </button>
           </div>
-
-          <br>
         </div>
 
-        <div class="text-hyphens">
+        <div class="text-hyphens" style="max-height: 500px;">
           <h2 class="opacity-50"> Назва товару </h2>
-          <h2> {{ item.productName }} </h2>
+          <h2 style="overflow: auto;"> {{ item.productName }} </h2>
 
           <h2 class="opacity-50"> Опис товару </h2>
-          <p> {{ item.description }} </p>
+          <p style="overflow: auto; max-height: 200px;"> {{ item.description }} </p>
         </div>
 
       </div>
@@ -73,14 +71,14 @@
         </div>
 
         <div class="d-flex justify-content-center mt-3" style="min-height: 200px">
-          <h2 *ngIf="!item.comments?.length" class="opacity-75 font-weight-700"> На цей товар ще не було відгуків. </h2>
+          <h2 *ngIf="!item.comments.length" class="opacity-75 font-weight-700"> На цей товар ще не було відгуків. </h2>
 
-          <div *ngIf="item.comments?.length">
+          <div *ngIf="item.comments.length">
             <div *ngFor="let comment of item.comments" class="review-block my-3">
               <div class="d-flex justify-content-between"> <!-- USER INFO -->
                 <div class="d-flex flex-row">
                   <!-- <img [src]="user.avatar">--> <!-- NEED ADD USER AVATAR -->
-                  <span> {{ comment.author?.login }} </span>
+                  <span> {{ comment?.author?.login }} </span>
                 </div>
 
                 <span> {{ comment.rating }} </span>
@@ -109,12 +107,18 @@
         </mat-form-field>
       </div>
     </mat-tab>
+
+    <mat-tab label="Запитання">
+      dwddw
+    </mat-tab>
   </mat-tab-group>
 
-  <div class="header-gradient header-menu" cdkDrag
-    cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle>
-
-  </div>
+  <div 
+    class="header-gradient header-menu" 
+    cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane" 
+    cdkDragHandle
+  > </div>
 
   <button mat-dialog-close class="btn-item position-absolute" style="right: 0; z-index: 100">
     <svg class="modal-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
