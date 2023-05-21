@@ -27,13 +27,11 @@ export class ShoppingCartService {
     if (user) {
       user.shoppingCart = user.shoppingCart.filter((item: ProductItem) => item.productId != productId);
     }
-    console.log('@@ user2 ', user)
     this._saveCart(user);
   }
 
   get currentShoppingCart(): ProductItem[] {
     let user = this._currentUser;
-    console.log('@@ ddd ', user)
     if (!user) {
       return [];
     }
@@ -55,9 +53,7 @@ export class ShoppingCartService {
 
   private get _currentUser(): IUser | undefined {
     const users: IUser[] = JSON.parse(localStorage.getItem('users') ?? '[]') as IUser[];
-    console.log('@@ users ', users)
     const accountId = JSON.parse(localStorage.getItem('accountId') ?? '0');
-    console.log('@@ accountId ', accountId)
     const user = users.find(user => user.id == accountId);
     return user;
   }

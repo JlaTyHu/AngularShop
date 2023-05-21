@@ -1,9 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject  } from '@angular/core';
 
-import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
-import { State } from '../../store/app-state';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -54,20 +51,19 @@ export class CreateItemDialogComponent implements OnInit {
   dialogProperty = 'expanded';
   modalType!: ItemManager;
 
-  imageHeight!: string;
-  imageWidth!: string;
-
   constructor(
-    private dialogRef: MatDialogRef<CreateItemDialogComponent>,
-    private fb: FormBuilder,
     private itemManagerService: ItemManagerService,
-    private store: Store<State>,
-    private _formBuilder: FormBuilder
-  ) {
-  }
+    @Inject(MAT_DIALOG_DATA) private data: { dialogAction: ItemManager, item: ProductItem }
+  ) { }
 
   ngOnInit() {
+    this.modalType = this.data.dialogAction;
 
+    if (this.modalType === ItemManager.EditItem) {
+      this.productItem = this.data.item;
+      this.imageUrl = this.data.item.imgSrc;
+      this.properties = this.data.item.properties;
+    }
   }
 
   isPropertyFiledNotEmpty(index: number): boolean {
@@ -114,8 +110,12 @@ export class CreateItemDialogComponent implements OnInit {
 
   onCreateItem() {
     const fullModel = { ...this.productItem, properties: this.properties };
-    console.log('@@ model ', fullModel)
     this.itemManagerService.addItem(fullModel);
+  }
+
+  onEditItem() {
+    const fullModel = { ...this.productItem, properties: this.properties };
+    this.itemManagerService.editItem(fullModel)
   }
 
   get disableButton(): boolean {
@@ -131,6 +131,13 @@ export class CreateItemDialogComponent implements OnInit {
     this.productItem.imgSrc = imgNotFound;
   }
 
+  dialogActionType() {
+    switch (this.modalType) {
+      case ItemManager.CreateItem: return this.onCreateItem();
+      case ItemManager.EditItem: return this.onEditItem(); 
+    }
+  }
+
   get propertiesValid(): boolean {
     return this.properties.every(property => !property.isEditMode);
   }
@@ -143,23 +150,11 @@ export class CreateItemDialogComponent implements OnInit {
     }
   }
 
-  getWidth() {
-    if (this.imageWidth > this.imageHeight) {
-      return '500px';
-    } else if (this.imageWidth < this.imageHeight) {
-      return '100px';
-    } else {
-      return '300px';
-    }
-  }
-
-  getHeight() {
-    if (this.imageWidth > this.imageHeight) {
-      return '100px';
-    } else if (this.imageWidth < this.imageHeight) {
-      return '500px';
-    } else {
-      return '300px';
+  get dialogButton(): string { 
+    switch (this.modalType) {
+      case ItemManager.CreateItem: return 'Створити';
+      case ItemManager.EditItem: return 'Зберегти';
+      default: return 'Продовжити';
     }
   }
 }

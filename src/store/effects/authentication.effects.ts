@@ -21,7 +21,6 @@ export class AuthenticationEffects {
     () =>
       this.actions$.pipe(
         ofType<AppRootErrorOccurred>(AppRootTypes.ErrorOccurred),
-        tap((action) => console.log('@@ er a ', action)),
         tap((action) => this.errorOccurredService.openErrorDialog(action.payload))
       ),
     {dispatch: false}

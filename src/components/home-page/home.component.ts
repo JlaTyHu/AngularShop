@@ -61,8 +61,6 @@ export class HomeComponent {
       pageSize: this.paginator.pageSize,
       length: this.items.length
     });
-    console.log('@@ array1 ', this.items)
-    console.log('@@ array2 ', this.paginator)
   }
 
   onPageChange(event: PageEvent) {

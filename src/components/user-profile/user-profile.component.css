@@ -11,6 +11,7 @@
 .user-avatar {
   border-radius: 15px;
   border: 1px solid grey;
-  width: 500px;
-  height: 500px;
+  width: 250px;
+  height: 250px;
+  background: rgba(0, 0, 0, 0.076);
 }

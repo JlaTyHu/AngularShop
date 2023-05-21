@@ -46,6 +46,7 @@
           <mat-label> Силка на картинку </mat-label>
           <input matInput required placeholder="Силка..." [(ngModel)]="imageUrl" (ngModelChange)="onImageUrlChange($event)">
         </mat-form-field>
+
         <img
           *ngIf="!!productItem.imgSrc"
           [@fadeIn]="imageLoaded"
@@ -53,9 +54,9 @@
           class="img-animation"
           [src]="productItem.imgSrc"
           (error)="onErrorImg()"
-          [style.width]="getWidth()" 
-          [style.height]="getHeight()"
+          [ngStyle]="{ width: '100%', height: '200px', objectFit: 'contain' }"
         >
+
         <mat-form-field appearance="outline" class="pt-3">
           <mat-label> Ціна товару </mat-label>
           <input
@@ -149,10 +150,10 @@
     mat-dialog-close
     [disabled]="disableButton"
     color="primary"
-    (click)="onCreateItem()"
+    (click)="dialogActionType()"
     style="border-radius: 10px"
   >
-    Створити
+    {{ dialogButton }}
   </button>
   <button
     mat-raised-button

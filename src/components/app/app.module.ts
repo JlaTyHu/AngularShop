@@ -6,7 +6,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from '../header/header.component';
 import { AuthenticationDialogModule } from '../../dialogs/authentication-dialog/authentication-dialog.module';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AppRoutingModule } from './app-routing.module'

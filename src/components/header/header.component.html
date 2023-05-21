@@ -146,10 +146,10 @@
             </div>
           </div>
         </div>
-
+<!-- 
         <div *ngIf="items.length" class="d-flex justify-content-center p-2">
           <span> Загальна ціна: {{ items.length }} </span>
-        </div>
+        </div> -->
       </mat-menu>
 
       <button class="ms-3" mat-button [matMenuTriggerFor]="menu">
@@ -163,12 +163,12 @@
 
 <mat-menu #menu="matMenu">
   <div *ngIf="userAuthenticated">
-    <button mat-menu-item (click)="navigateToUserProfile()">
+    <!-- <button mat-menu-item (click)="navigateToUserProfile()">
       <mat-icon> notes</mat-icon>
       <span>
         Мій аккаунт
       </span>
-    </button>
+    </button> -->
     <button mat-menu-item (click)="onLogout()">
       <mat-icon> logout</mat-icon>
       <span> Вийти </span>

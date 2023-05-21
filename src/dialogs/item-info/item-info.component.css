@@ -56,8 +56,9 @@
 .review-block {
   padding: 20px;
   border: 2px solid #0000000a;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 8px 6px -6px rgba(0, 0, 0, 0.4);
+  background: #00000005;
 }
 
 .font-weight-700 {
@@ -91,4 +92,9 @@ img {
   z-index: 10;
   position: absolute;
   border-radius: 15px 15px 0 0;
+}
+
+.answer-box {
+  padding: 20px 20px 10px 20px; 
+  overflow: auto;
 }

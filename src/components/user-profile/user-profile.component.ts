@@ -9,7 +9,7 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { State } from '../../store/app-state';
 import { Store } from '@ngrx/store';
 import { AuthenticationLogoutRequest } from '../../store/actions/authentication.actions';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
 import { ProductItem } from '../../models/product-item';
@@ -18,6 +18,8 @@ import {
   moveItemInArray,
   transferArrayItem
 } from '@angular/cdk/drag-drop';
+import { PurchaseService } from 'src/services/purchase.service';
+import { IUser } from 'src/interfaces/user';
 
 @Component({
   selector: 'app-user-profile',
@@ -25,44 +27,58 @@ import {
   styleUrls: ['./user-profile.component.css']
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
-  title = 'AngularShop';
+
   isAuthorized: boolean = false;
   subscription: Subscription = new Subscription();
   items: ProductItem[] = [];
   isHoveredProfile = false;
+  users: IUser[] = [];
+  userProfile!: IUser;
 
   constructor(
-    private dialog: MatDialog,
     private authenticationService: AuthenticationService,
-    private store: Store<State>,
     private router: Router,
-    private shoppingCartService: ShoppingCartService
+    private shoppingCartService: ShoppingCartService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.authenticationService.getAllUsers();
+    
+    this.subscription.add(this.authenticationService.users.subscribe(
+      (users) => this.users = users
+    ));
+
     this.subscription.add(this.authenticationService.isAuthenticated.subscribe(
       (flag) => (this.isAuthorized = flag)
     ));
+
     this.isAuthorized = this.authenticationService.getAuthStatus();
+
     this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
       (items) => this.items = items
     ));
+
     this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
       (items) => (this.items = items)
+    ));
+
+    this.subscription.add(this.route.params.subscribe(
+      (params) => {
+        const currentUser = this.users.find(user => user.id == params['id']);
+        console.log(currentUser);
+        console.log(params['id']);
+        console.log(this.users);
+        if (currentUser) {
+          this.userProfile = currentUser;
+        }
+      }
     ));
   }
 
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
-    }
-  }
-
-  dragEnd(event: CdkDragEnd, itemId: number) {
-    const { x, y } = event.distance;
-    if (Math.abs(x) > 100 || Math.abs(y) > 125) {
-      this.items.splice(this.items.indexOf(event.source.data), 1);
-      this.onDeleteForShoppingCard(itemId);
     }
   }
 
@@ -74,55 +90,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     event.stopPropagation();
   }
 
-  onAuthenticationDialog(formType: AuthenticationEnum) {
-    let dialogRef!: MatDialogRef<AuthenticationDialogComponent, any>;
-    console.log('@@ hey ', formType);
-    switch (formType) {
-      case AuthenticationEnum.Registration:
-        dialogRef = this.dialog.open(AuthenticationDialogComponent, {
-          data: {
-            title: 'Registration',
-            formType: AuthenticationEnum.Registration,
-          },
-          width: '50%',
-        });
-        break;
-      case AuthenticationEnum.Authorization:
-        dialogRef = this.dialog.open(AuthenticationDialogComponent, {
-          data: {
-            title: 'Authorization',
-            formType: AuthenticationEnum.Authorization,
-          },
-          width: '50%',
-        });
-        break;
-    }
-  }
-
-  onDeleteForShoppingCard(itemId: number) {
-    this.shoppingCartService.removeFromCart(itemId);
-  }
-
-  onLogout() {
-    this.store.dispatch(new AuthenticationLogoutRequest());
-  }
-
   handleClick(event: MouseEvent, action: boolean) {
     if (action) {
       event.stopPropagation();
-    }
-  }
-
-  drop(event: CdkDragDrop<ProductItem[], any>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
     }
   }
 }

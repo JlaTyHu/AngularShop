@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
 export class ErrorDialogComponent {
   errorMessage!: any;
 
-  constructor() { console.log('@@ error ', this.errorMessage) }
+  constructor() { }
 }

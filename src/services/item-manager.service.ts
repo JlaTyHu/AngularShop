@@ -17,7 +17,7 @@ export class ItemManagerService {
   getUserItems(): ProductItem[] { 
     let items = JSON.parse(localStorage.getItem('items')?? '[]');
     const accountId = JSON.parse(localStorage.getItem('accountId') ?? '0');
-    items = items.filter((item: ProductItem) => item?.author?.id == accountId);
+    items = items.filter((item: ProductItem) => item.author.id == accountId);
     return items;
   }
 
@@ -34,7 +34,8 @@ export class ItemManagerService {
         login: '',
         email: '',
         password: '',
-        shoppingCart: []
+        shoppingCart: [],
+        purchasedGoods: []
       }
       user = defaultUser;
     }
@@ -60,9 +61,7 @@ export class ItemManagerService {
 
   removeItem(id: number): Promise<boolean> {
     let items = this.getAllItems();
-    console.log('@@ remove before', items);
     items = items.filter(item => item.productId != id);
-    console.log('@@ remove after', items);
     if (!!items.length) {
       localStorage.setItem('items', JSON.stringify(items));
       this.items.next(items);
@@ -73,8 +72,13 @@ export class ItemManagerService {
     }
   }
 
-  editItem(item: ProductItem): Promise<boolean> {
+  editItem(productItem: ProductItem): Promise<boolean> {
     // this.items.next(items);
+    let userItems = this.getAllItems();
+    userItems = userItems.filter(item => item.productId != productItem.productId);
+    userItems.push(productItem);
+    localStorage.setItem('items', JSON.stringify(userItems));
+    this.items.next(userItems);
     return Promise.resolve(true);
   }
 }

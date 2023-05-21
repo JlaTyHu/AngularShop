@@ -1,11 +1,16 @@
 import { Injectable } from "@angular/core";
 import { IUser } from '../interfaces/user';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
-  isAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  account: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  isAuthenticated: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
+  account: ReplaySubject<any> = new ReplaySubject<any>(1);
+  users: ReplaySubject<IUser[]> = new ReplaySubject<IUser[]>(1);
+
+  getAllUsers() {
+    this.users.next(JSON.parse(localStorage.getItem('users') ?? '[]'));
+  }
 
   register(login: string, email: string, password: string): Promise<boolean> {
     const usersString = localStorage.getItem('users');
@@ -21,7 +26,8 @@ export class AuthenticationService {
       login,
       email,
       password,
-      shoppingCart: []
+      shoppingCart: [],
+      purchasedGoods: []
     };
 
     users.push(newUser);

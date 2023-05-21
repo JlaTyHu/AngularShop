@@ -1,31 +1,31 @@
-<div class="header-row">
+<div 
+  class="header-row header-gradient"   
+  cdkDrag 
+  cdkDragRootElement=".cdk-overlay-pane" 
+  cdkDragHandle
+>
   <h2 mat-dialog-title>
     <mat-icon [ngStyle]="{ 'vertical-align': 'middle'}">
       error_outline
     </mat-icon>
-    Error Occurred
+    Виникла помилка
   </h2>
-  <button
-    mat-stroked-button
-    mat-dialog-close
-    class="justify-content-end"
-  >
-    <mat-icon>
-      close
-    </mat-icon>
+  <button mat-dialog-close class="d-flex justify-content-center close-btn">
+    <mat-icon> close </mat-icon>
   </button>
 </div>
-<hr>
+
 <mat-dialog-content>
   <p>
     {{ errorMessage.message }}
   </p>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-flat-button color="warn" mat-dialog-close>
+
+<mat-dialog-actions style="padding: 10px 20px; background: #0000000a;">
+  <button mat-raised-button color="warn" mat-dialog-close style="border-radius: 10px">
     <mat-icon>
       close
     </mat-icon>
-    Close
+    Закрити
   </button>
 </mat-dialog-actions>

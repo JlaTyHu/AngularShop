@@ -5,6 +5,7 @@ import { ErrorDialogComponent } from "./error-dialog.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatButtonModule } from "@angular/material/button";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 @NgModule({
   declarations: [ErrorDialogComponent],
@@ -12,7 +13,8 @@ import { MatButtonModule } from "@angular/material/button";
     CommonModule,
     MatIconModule,
     MatDialogModule,
-    MatButtonModule
+    MatButtonModule,
+    DragDropModule
   ],
   exports: [ErrorDialogComponent]
 })

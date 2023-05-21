@@ -2,12 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
-import { Store } from '@ngrx/store';
-import { State } from '../../store/app-state';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { ItemManagerService } from '../../services/item-manager.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ProductItem } from '../../models/product-item';
-import { AuthenticationService } from '../../services/authentication.service';
+import { PurchaseService } from 'src/services/purchase.service';
 
 @Component({
   selector: 'app-goods',
@@ -23,7 +20,7 @@ import { AuthenticationService } from '../../services/authentication.service';
   ]
 })
 export class PurchaseOfGoodsComponent implements OnInit {
-  item!: ProductItem;
+  item: ProductItem = new ProductItem();
   cardNumber = '';
   cardDate = '';
   cardCVV2!: number;
@@ -32,17 +29,15 @@ export class PurchaseOfGoodsComponent implements OnInit {
   amount = 0;
 
   constructor(
-    private store: Store<State>,
-    private dialog: MatDialog,
-    private authenticationService: AuthenticationService,
-    private createItemService: ItemManagerService,
-    @Inject(MAT_DIALOG_DATA) private data: { product: ProductItem, selectedTabIndex: number }
+    @Inject(MAT_DIALOG_DATA) private data: { product: ProductItem, selectedTabIndex: number },
+    private purchaseService: PurchaseService
   ) { }
 
   ngOnInit() {
   }
 
   onSubmitForm() {
+    this.purchaseService.buyGood(this.item);
     this.isSubmitted = true;
   }
 
@@ -69,7 +64,6 @@ export class PurchaseOfGoodsComponent implements OnInit {
   onInputCardNumber(event: Event) {
     const input = event.target as HTMLInputElement;
     let { value } = input;
-    // value = value.replace(/\D/g, '');
     this.cardNumber = value;
   }
 

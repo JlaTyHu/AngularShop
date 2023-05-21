@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   MatDialog,
   MatDialogRef,
@@ -36,32 +36,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private authenticationService: AuthenticationService,
     private store: Store<State>,
     private router: Router,
-    private shoppingCartService: ShoppingCartService
+    private shoppingCartService: ShoppingCartService,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.subscription.add(this.authenticationService.account.subscribe(
       (id) => {
-        console.log('@@ flag ', id);
-        console.log('@@ flag ', !!id);
         if (id == 0) {
           id = false;
         }
         if (id) {
           this.isAuthorized = true;
           this.items = this.shoppingCartService.currentShoppingCart;
-          console.log('@@ items s ', this.shoppingCartService.currentShoppingCart)
         } else {
           this.isAuthorized = false;
           this.items = [];
         }
+        this.changeDetector.detectChanges();
       }
     ));
-    // this.isAuthorized = this.authenticationService.getAuthStatus();
     this.subscription.add(this.shoppingCartService.userShoppingCart.subscribe(
       (items) => {
         this.items = items;
-        console.log('@@items shopping cart ', items)
+        this.changeDetector.detectChanges();
       }
     ));
   }
@@ -71,14 +69,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.subscription.unsubscribe();
     }
   }
-
-  // dragEnd(event: CdkDragEnd, itemId: number) {
-  //   const { x, y } = event.distance;
-  //   if (Math.abs(x) > 100 || Math.abs(y) > 125) {
-  //     this.items.splice(this.items.indexOf(event.source.data), 1);
-  //     this.onDeleteForShoppingCard(itemId);
-  //   }
-  // }
 
   onNavigate(routName: string) {
     this.router.navigate([routName]);
@@ -90,7 +80,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onAuthenticationDialog(formType: AuthenticationEnum) {
     let dialogRef!: MatDialogRef<AuthenticationDialogComponent, any>;
-    console.log('@@ hey ', formType);
     switch (formType) {
       case AuthenticationEnum.Registration:
         dialogRef = this.dialog.open(AuthenticationDialogComponent, {
@@ -119,6 +108,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthenticationLogoutRequest());
+    this.navigateToMainPage();
   }
 
   handleClick(event: MouseEvent, action: boolean) {
@@ -131,12 +121,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   }
 
-  navigateToUserProfile() {
-    this.router.navigate(['/user-profile', JSON.parse(localStorage.getItem('accountId')?? '0')]);
+  navigateToMainPage() {
+    this.router.navigate(['/all-goods']);
   }
 
   get userAuthenticated(): boolean { 
-    console.log('@@ metod')
     return this.authenticationService.getAuthStatus();
   }
 }

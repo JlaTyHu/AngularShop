@@ -45,7 +45,14 @@
 
     <mat-form-field appearance="outline" class="w-40">
       <mat-label> CVV2 </mat-label>
-      <input matInput type="number" placeholder="1234" [(ngModel)]="cardCVV2" required [maxLength]="3">
+      <input 
+        matInput 
+        type="text" 
+        placeholder="1234" 
+        [(ngModel)]="cardCVV2" 
+        required 
+        [maxLength]="3"
+      >
     </mat-form-field>
   </div>
 

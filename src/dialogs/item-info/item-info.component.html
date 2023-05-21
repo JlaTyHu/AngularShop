@@ -8,6 +8,7 @@
     mat-align-tabs="start"
     class="menu-position w-100"
     [selectedIndex]="selectedTabIndex"
+    style="max-height: 550px"
   >
     <mat-tab label="Товар">
       <div class="d-flex justify-content-between mt-2 mat-tab-p">
@@ -25,12 +26,25 @@
           <div class="d-flex flex-row justify-content-around">
             <p> Автор: {{ item.author.login }} </p>
             <p> Видгукив: {{ item.comments.length }} </p>
-            <p> Товар придбало: 2 </p>
+            <p> Товар придбало: {{ item.numberOfPurchases }} </p>
           </div>
           
           <div class="d-flex justify-content-around">
-            <button mat-raised-button style="border-radius: 10px" color="primary"> Придбати цей товар </button>
-            <button mat-raised-button style="border-radius: 10px" color="primary"> Додати товар до кошика </button>
+            <button 
+              mat-raised-button 
+              style="border-radius: 10px" 
+              color="primary" 
+              (click)="onBuyItem()"
+              [disabled]="isAuthorItem || !authorId"
+            > Придбати цей товар </button>
+
+            <button 
+              mat-raised-button 
+              style="border-radius: 10px" 
+              color="primary"
+              (click)="onAddToShoppingCard()"
+              [disabled]="getQualityId() || !onUserAuth"
+            > Додати товар до кошика </button>
           </div>
         </div>
 
@@ -64,26 +78,78 @@
     </mat-tab>
 
     <mat-tab label="Відгуки">
-      <div class="mat-tab-p">
+      <div class="mat-tab-p" style="max-height: 500px">
         <div class="d-flex justify-content-between align-items-center flex-row review-block w-100 mt-2">
           <h3 class="m-0"> Залишити відгук про товар </h3>
-          <button class="action-btn"> Залишити відгук </button>
+          <button 
+            mat-raised-button 
+            [matTooltip]="matToolTipText"
+            style="border-radius: 10px" 
+            [disabled]="!checkIsProductPurchased || userAlreadyReviewed"
+            (click)="isCreateReviewMode = true"
+          > Залишити відгук </button>
         </div>
 
-        <div class="d-flex justify-content-center mt-3" style="min-height: 200px">
-          <h2 *ngIf="!item.comments.length" class="opacity-75 font-weight-700"> На цей товар ще не було відгуків. </h2>
+        <div 
+          class="d-flex justify-content-center mt-3 flex-column align-items-center" 
+          style="min-height: 200px"
+        >
+          <h2 
+            *ngIf="!item.comments.length && !isCreateReviewMode" 
+            class="opacity-75 font-weight-700"
+          > На цей товар ще не було відгуків. </h2>
 
-          <div *ngIf="item.comments.length">
-            <div *ngFor="let comment of item.comments" class="review-block my-3">
+          <div *ngIf="isCreateReviewMode" class="d-flex flex-column w-100 review-block">
+            <div matTooltip="Рейтинг" style="color: gold">
+              <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                <mat-icon 
+                  (click)="onSetRating(i + 1);" 
+                  (mouseover)="onChangeRating(i + 1)"
+                  [ngClass]="{ 'filled': i < currentRating }"
+                >
+                  {{ i < currentRating ? 'star' : 'star_outline' }} </mat-icon>
+              </ng-container>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label> Ваш відгук </mat-label>
+              <textarea matInput [(ngModel)]="comment"></textarea>       
+            </mat-form-field>
+            
+            <div class="d-flex flex-row justify-content-between p-0">
+              <button 
+                mat-raised-button 
+                color="primary" 
+                style="border-radius: 10px;"
+                [disabled]="!comment.length"
+                (click)="onSendComment()"
+              > Відправити </button>
+
+              <button 
+                mat-raised-button 
+                color="warn" 
+                (click)="isCreateReviewMode = false" 
+                style="border-radius: 10px;"
+              > Скасувати </button>
+            </div>
+          </div>
+
+          <div *ngIf="item.comments.length" class="w-100">
+            <div *ngFor="let comment of item.comments" class="review-block my-3 w-100">
               <div class="d-flex justify-content-between"> <!-- USER INFO -->
                 <div class="d-flex flex-row">
-                  <!-- <img [src]="user.avatar">--> <!-- NEED ADD USER AVATAR -->
                   <span> {{ comment?.author?.login }} </span>
                 </div>
 
-                <span> {{ comment.rating }} </span>
+                <div matTooltip="Рейтинг" style="color: gold">
+                  <ng-container *ngFor="let star of [1, 2, 3, 4, 5]; let i = index">
+                    <mat-icon [ngClass]="{ 'filled': i < comment.rating }"> 
+                      {{ i < comment.rating ? 'star' : 'star_outline' }} 
+                    </mat-icon>
+                  </ng-container>
+                </div>
 
-                <span> {{ comment.dateCreate }} </span>
+                <span> {{ comment.dateCreate | date: 'M/d/y, h:mm' }} </span>
               </div>
 
               <hr>
@@ -96,7 +162,7 @@
         </div>
 
         <mat-form-field *ngIf="false" appearance="outline" class="w-100 my-2">
-          <mat-label>Textarea</mat-label>
+          <mat-label> Textarea </mat-label>
           <input matInput>
           <button class="action-btn position-absolute" style="right: 0; top: 50%">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -109,7 +175,118 @@
     </mat-tab>
 
     <mat-tab label="Запитання">
-      dwddw
+      <div class="d-flex flex-column justify-content-center mat-tab-p">
+        <div class="d-flex flex-row align-items-center justify-content-center review-block w-100 mt-2">
+          <button 
+            mat-raised-button 
+            style="border-radius: 10px; padding: 10px;"
+            (click)="toggleCreateQuestionMode()"
+            [color]="!isCreateQuestionMode ? 'default' : 'warn'"
+            [disabled]="!authorId"
+          > {{ !isCreateQuestionMode ? 'Поставити своє питання щодо товару' : 'Скасувати' }} </button>
+        </div>
+
+        <div 
+          *ngIf="!item.questions.length && !isCreateQuestionMode" 
+          class="d-flex justify-content-center align-items-center"
+        > <h3 class="py-3 "> До цього товару не було питань </h3> </div>
+
+        <div *ngIf="isCreateQuestionMode" class="d-flex flex-column w-100 review-block w-100 mt-4">
+          <mat-form-field appearance="outline">
+            <mat-label> Ваше питання </mat-label>
+            <textarea matInput [(ngModel)]="questionText"></textarea>
+          </mat-form-field>
+
+          <div class="d-flex flex-row-reverse">
+            <button 
+              mat-raised-button 
+              style="border-radius: 10px;"
+              (click)="onCreateQuestion()"
+              [disabled]="!questionText.length"
+              color="primary"
+            > Відправити </button> 
+          </div>
+      
+        </div>
+
+        <div *ngFor="let question of item.questions; let questionIndex = index" class="d-flex flex-column" style="max-height: 500px">
+          <div class="d-flex flex-column review-block w-100 mt-4 answer-box">
+            <div class="d-flex justify-content-between flex-row pb-2" style="border-bottom: 1px solid #8080806b;">
+              <span> {{ question.author.login }} </span>
+              <span> {{ question.dateCreate | date: 'M/d/y, h:mm' }} </span>
+            </div>      
+
+            <div class="d-flex flex-column w-100 mt-2">
+              <div> {{ question.messageText }} </div>
+            
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-center flex-grow-1">
+                  <button 
+                    mat-icon-button 
+                    [disabled]="!question.answers.length"
+                    (click)="question.isAnswerReviewMode = !question.isAnswerReviewMode"
+                  >
+                    <mat-icon 
+                      *ngIf="!question.isAnswerReviewMode"
+                      [matBadge]="question.answers.length" 
+                      matBadgeSize="small"
+                    > keyboard_arrow_down </mat-icon>
+
+                    <mat-icon 
+                      *ngIf="question.isAnswerReviewMode"
+                      [matBadge]="question.answers.length" 
+                      matBadgeSize="small"
+                    > keyboard_arrow_up </mat-icon>
+                  </button>
+                </div>  
+
+                
+                <div class="d-flex flex-row-reverse">
+                  <button 
+                    mat-raised-button
+                    style="border-radius: 10px;" 
+                    (click)="toggleCreateAnswerMode(questionIndex)"
+                    [color]="!question.isCreateAnswerMode ? 'primary' : 'warn'"
+                    [disabled]="!authorId"
+                  > {{ !question.isCreateAnswerMode ? 'Дати відповідь' : 'Скасувати' }} </button>
+                </div>  
+              </div>
+
+              <div *ngIf="question.isCreateAnswerMode" class="review-block w-100 mt-2">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label> Ваша відповідь </mat-label>
+                  <textarea matInput [(ngModel)]="question.tempQuestionText"></textarea>
+                </mat-form-field>
+
+                <div class="d-flex flex-row-reverse">
+                  <button 
+                    mat-raised-button 
+                    style="border-radius: 10px;"
+                    (click)="onCreateAnswerForQuestion(question.questionId, questionIndex ,question.tempQuestionText)"
+                    [disabled]="!question.tempQuestionText.length"
+                    color="primary"
+                  > Відповісти </button>
+                </div>
+              </div>
+
+              <div *ngIf="question.isAnswerReviewMode">
+                <div *ngFor="let answer of question.answers; let answerIndex = index">
+                  <div class="d-flex flex-column review-block w-100 mt-4 answer-box">
+                    <div class="d-flex justify-content-between flex-row pb-2" style="border-bottom: 1px solid #8080806b;">
+                      <span> {{ answer.author.login }} </span>
+                      <span> {{ answer.dateCreate | date: 'M/d/y, h:mm' }} </span>
+                    </div>      
+        
+                    <div class="d-flex flex-column w-100 mt-2">
+                      <p style="word-wrap: break-word;"> {{ answer.messageText }} </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </mat-tab>
   </mat-tab-group>
 

@@ -4,7 +4,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { AuthenticationEnum } from '../../enums/authentication.enum';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthenticationService } from '../../services/authentication.service';
 import { Store } from '@ngrx/store';
 import {
   AuthorizationRequest,
@@ -30,7 +29,6 @@ export class AuthenticationDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<AuthenticationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
     private fb: FormBuilder,
-    private authenticationService: AuthenticationService,
     private store: Store<State>
   ) {
   }
@@ -44,7 +42,6 @@ export class AuthenticationDialogComponent implements OnInit {
   }
 
   private _initializationFormType() {
-    console.log('@@ typeee ', this.data.formType)
     if (this.data.formType as AuthenticationEnum === AuthenticationEnum.Registration) {
       this.authenticationForm = this.fb.group({
         login: [

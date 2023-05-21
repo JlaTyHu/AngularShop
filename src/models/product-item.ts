@@ -1,3 +1,4 @@
+import { IQuestion } from 'src/interfaces/question';
 import { IProductComments } from '../interfaces/product-comments';
 
 export class ProductItem {
@@ -16,6 +17,11 @@ export class ProductItem {
   } = { login: '', id: 0 } ;
   comments: IProductComments[] = [];
   properties: { name: string, type: string, isEditMode: boolean }[] = [];
+  isReviewed?: boolean = false;
+  numberOfPurchases = 0;
+  quantityOfGoods = 0;
+  whoIsPurchased: { id: number, login: string }[] = [];
+  questions: IQuestion[] = [];
 
   constructor() {
   }

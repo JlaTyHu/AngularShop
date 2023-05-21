@@ -13,8 +13,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 
-import { Store } from '@ngrx/store';
-import { State } from '../../store/app-state';
 import { ItemManagerService } from '../../services/item-manager.service';
 import { ProductItem } from '../../models/product-item';
 import { Subscription } from 'rxjs';
@@ -25,13 +23,14 @@ import { ItemInfoComponent } from '../../dialogs/item-info/item-info.component';
 import { PurchaseOfGoodsComponent } from '../../dialogs/purchase-of-goods/purchase-of-goods.component';
 import { FormsModule } from '@angular/forms';
 import { PageType } from 'src/enums/page.enum';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { CreateItemDialogComponent } from 'src/dialogs/create-item/create-item-dialog.component';
 import { ConfirmActionComponent } from 'src/dialogs/confirm-action/confirm-action.component';
 import { SnackbarService } from 'src/services/snackbar.service';
 import { ItemMessages } from 'src/enums/item-messages.enum';
 import { IUser } from 'src/interfaces/user';
 import { imgNotFound } from 'src/consts/img-not-found.const';
+import { ItemManager } from 'src/enums/item-manage.enum';
 
 @Component({
   selector: 'app-goods',
@@ -79,17 +78,15 @@ export class GoodsComponent implements OnInit, OnDestroy {
   priceFilter = { from: 0, to: 0 };
   pageType!: PageType;
   PageType = PageType;
+  private intervalId: any;
 
   constructor(
-    private store: Store<State>,
     private itemManagerService: ItemManagerService,
     private authenticationService: AuthenticationService,
     private shoppingCartService: ShoppingCartService,
-    private dialogRef: MatDialog,
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private snackbarService: SnackbarService,
-    private router: Router,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
@@ -99,38 +96,39 @@ export class GoodsComponent implements OnInit, OnDestroy {
       this.authenticationService.account.subscribe((id: any) => {
         if (id) {
           this.accountId = id;
+          this._getItemsForPageType();
         } else {
           this.accountId = 0;
         }
+
+        this.changeDetectorRef.detectChanges();
+
+        this.itemManagerService.items.subscribe(() => {
+          this._getItemsForPageType();
+          this.changeDetectorRef.detectChanges();
+        });
       })
     );
     this.accountId = this.authenticationService.getAccountId();
-
-    console.log('@@ pageType ', this.pageType);
-
+  
     this._fillCurrentRating();
+
+    this.intervalId = setInterval(() => this._fillCurrentRating(), 1000);
   }
 
   private _getItemsForPageType() {
-    console.log('@@ get here ')
     this.pageType = this.route.snapshot.data['pageType'] as PageType;
     if (this.pageType === PageType.AllGoodsComponent) {
       this.items = this.itemManagerService.getAllItems();
     } else if (this.pageType === PageType.MyGoodsComponent) {
       this.items = this.itemManagerService.getUserItems();
-      console.log('@@ get items here ', this.items);
-      this.itemManagerService.items.subscribe(
-        () => {
-          this.items = this.itemManagerService.getUserItems();
-          this.pagedItems = this.items.slice(0, 9);
-          this.changeDetectorRef.detectChanges();
-        }
-      );
     }
     this.pagedItems = this.items.slice(0, 9);
+    this.changeDetectorRef.detectChanges();
   }
 
   ngOnDestroy() {
+    clearInterval(this.intervalId);
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
@@ -139,10 +137,17 @@ export class GoodsComponent implements OnInit, OnDestroy {
   private _fillCurrentRating() {
     this.currentRating = [];
     this.items.map((item) => this.currentRating.push(item.rating?.number ?? 0));
+    this.changeDetectorRef.detectChanges();
   }
 
   onEditUserItem(item: ProductItem) {
-
+    this.dialog.open(CreateItemDialogComponent, {
+      width: 'fit-content',
+      data: {
+        dialogAction: ItemManager.EditItem,
+        item: item
+      }
+    });
   }
 
   onDeleteUserItem(item: ProductItem) { 
@@ -177,12 +182,12 @@ export class GoodsComponent implements OnInit, OnDestroy {
 
   onOpenItem(item: ProductItem, index?: number) {
     if (index) {
-      this.dialogRef.open(ItemInfoComponent, {
+      this.dialog.open(ItemInfoComponent, {
         data: { product: item, selectedTabIndex: index },
         width: 'fit-content',
       });
     } else {
-      this.dialogRef.open(ItemInfoComponent, {
+      this.dialog.open(ItemInfoComponent, {
         data: { product: item },
         width: 'fit-content',
       });
@@ -197,7 +202,6 @@ export class GoodsComponent implements OnInit, OnDestroy {
     }
 
     if (this.textFilter) {
-      console.log('@@ if');
       this.items = this.items.filter(
         (item) =>
           item.productName
@@ -208,17 +212,14 @@ export class GoodsComponent implements OnInit, OnDestroy {
     }
 
     if (this.priceFilter.from && !this.priceFilter.to) {
-      console.log('@@ this.priceFilter.from && !this.priceFilter.to');
       this.items = this.items.filter(
         (item) => item.price >= this.priceFilter.from
       );
     } else if (!this.priceFilter.from && this.priceFilter.to) {
-      console.log('@@ !this.priceFilter.from && this.priceFilter.to');
       this.items = this.items.filter(
         (item) => item.price <= this.priceFilter.to
       );
     } else if (this.priceFilter.from && this.priceFilter.to) {
-      console.log('@@ this.priceFilter.from && this.priceFilter.to');
       this.items = this.items.filter(
         (item) =>
           item.price >= this.priceFilter.from &&
@@ -240,7 +241,7 @@ export class GoodsComponent implements OnInit, OnDestroy {
 
   onBuyItem(event: Event, item: ProductItem) {
     event.stopPropagation();
-    const ref = this.dialogRef.open(PurchaseOfGoodsComponent);
+    const ref = this.dialog.open(PurchaseOfGoodsComponent);
     ref.componentInstance.item = item;
   }
 
@@ -268,7 +269,10 @@ export class GoodsComponent implements OnInit, OnDestroy {
 
   onCreateItem() {
     this.dialog.open(CreateItemDialogComponent, {
-      width: 'fit-content'
+      width: 'fit-content',
+      data: {
+        dialogAction: ItemManager.CreateItem,
+      }
     });
   }
 
